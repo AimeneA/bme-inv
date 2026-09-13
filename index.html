@@ -12,7 +12,7 @@
     --green:#009A44; --green-d:#00762f; --green-bg:#e8f6ee;
     --amber:#a35a00; --amber-bg:#fff6e6;
     --blue:#2f36a8; --blue-bg:#e9eafd;
-    --red:#b3261e; --red-bg:#fdecea;
+    --red:#b3261e;
     --pad:16px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -40,39 +40,42 @@
   .pane{display:none;padding:var(--pad);padding-bottom:40px}
   .pane.on{display:block}
 
-  .chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}
-  .chips button{flex:0 0 auto;background:var(--paper);border:1px solid var(--line);border-radius:999px;
-    padding:8px 13px;font-size:13.5px;color:var(--ink-2);white-space:nowrap}
-  .chips button[aria-pressed="true"]{background:#0f1720;border-color:#0f1720;color:#fff;font-weight:500}
-
   input[type=text],input[type=search],input[type=number],select,textarea{
     width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);font-size:16px}
-  textarea{min-height:58px;resize:vertical}
+  textarea{min-height:56px;resize:vertical}
   input:focus,select:focus,textarea:focus{outline:2px solid var(--green);outline-offset:-1px;border-color:var(--green)}
   label{display:block;margin-bottom:12px}
   label>span{display:block;font-size:13px;color:var(--ink-2);margin-bottom:5px}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .two label{margin-bottom:0}
 
-  .po{background:var(--paper);border:1px solid var(--line);border-left-width:4px;border-radius:10px;
-    padding:11px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
-  .po.s-found{border-left-color:var(--green);background:var(--green-bg)}
-  .po.s-gone{border-left-color:var(--ink-3);opacity:.6}
-  .po.s-missing{border-left-color:var(--red);background:var(--red-bg)}
-  .po.s-unidentified{border-left-color:var(--blue);background:var(--blue-bg)}
-  .po.s-none{border-left-color:var(--line)}
-  .po .thumb{flex:0 0 44px;height:44px;border-radius:7px;object-fit:cover;background:var(--sunk)}
-  .po .body{flex:1;min-width:0}
-  .po .body b{display:block;font-size:14.5px;font-weight:600;line-height:1.3}
-  .po .meta{font-size:12px;color:var(--ink-2);margin-top:3px}
-  .tag{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 6px;border-radius:5px;
-    background:var(--sunk);color:var(--ink-2);margin-right:4px;font-variant-numeric:tabular-nums}
-  .tag.major{background:var(--blue-bg);color:var(--blue)}
-  .tag.equip{background:var(--green-bg);color:var(--green-d)}
-  .tag.other{background:var(--amber-bg);color:var(--amber)}
-  .tag.price{background:#0f1720;color:#fff}
+  .searchbar{display:flex;gap:8px;margin-bottom:10px}
+  .searchbar input{flex:1}
+  .iconbtn{flex:0 0 auto;background:var(--green);color:#fff;border:0;border-radius:9px;padding:0 15px;
+    font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px}
+  .iconbtn svg{width:18px;height:18px}
 
-  .empty{text-align:center;color:var(--ink-2);padding:40px 18px}
+  .row{background:var(--paper);border:1px solid var(--line);border-left-width:4px;border-radius:10px;
+    padding:11px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+  .row.flagged{border-left-color:var(--amber);background:var(--amber-bg)}
+  .row.major{border-left-color:var(--blue)}
+  .row.plain{border-left-color:var(--green)}
+  .row.dim{border-left-color:var(--line);opacity:.75}
+  .row .thumb{flex:0 0 46px;height:46px;border-radius:7px;object-fit:cover;background:var(--sunk)}
+  .row .body{flex:1;min-width:0}
+  .row .body b{display:block;font-size:14.5px;font-weight:600;line-height:1.3}
+  .row .meta{font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.55}
+  .qty{flex:0 0 auto;text-align:center;min-width:34px}
+  .qty b{display:block;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+  .qty span{font-size:9.5px;color:var(--ink-3)}
+  .tg{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 6px;border-radius:5px;
+    background:var(--sunk);color:var(--ink-2);margin-right:4px;font-variant-numeric:tabular-nums}
+  .tg.major{background:var(--blue-bg);color:var(--blue)}
+  .tg.minor{background:var(--green-bg);color:var(--green-d)}
+  .tg.none{background:var(--amber-bg);color:var(--amber)}
+  .tg.po{background:#0f1720;color:#fff}
+
+  .empty{text-align:center;color:var(--ink-2);padding:38px 18px}
   .empty b{display:block;font-size:16.5px;color:var(--ink);margin-bottom:6px;font-weight:600}
 
   .btn{width:100%;padding:14px;border-radius:11px;border:1px solid var(--line);background:var(--paper);
@@ -84,8 +87,19 @@
   .card h2{margin:0 0 11px;font-size:13px;font-weight:600;color:var(--ink-2)}
   .note{font-size:13.5px;color:var(--ink-2);margin:0 0 13px;line-height:1.5}
   .note strong{color:var(--ink)}
-  .warn{background:var(--amber-bg);color:var(--amber);border-radius:9px;padding:11px 12px;
-    font-size:13.5px;line-height:1.5;margin-bottom:12px}
+  .dupwarn{background:var(--amber-bg);color:var(--amber);border-radius:9px;padding:10px 12px;
+    font-size:13px;line-height:1.5;margin-bottom:10px}
+
+  .loc{display:flex;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .loc:last-of-type{border-bottom:0}
+  .loc .lt{flex:1;min-width:0;font-size:14px}
+  .loc .lt b{display:block;font-weight:600}
+  .loc .lt span{font-size:12px;color:var(--ink-2)}
+  .step{display:flex;align-items:center;gap:5px}
+  .step button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);
+    background:var(--sunk);font-size:19px;line-height:1;font-weight:600;color:var(--ink-2)}
+  .step b{min-width:26px;text-align:center;font-variant-numeric:tabular-nums;font-size:16px}
+  .locdel{background:none;border:0;color:var(--red);font-size:12.5px;padding:3px}
 
   .sheet{position:fixed;inset:0;z-index:70;background:var(--sunk);overflow-y:auto;display:none;
     padding-bottom:calc(90px + env(safe-area-inset-bottom))}
@@ -97,16 +111,16 @@
   .sheet-body{padding:var(--pad)}
   .facts{font-size:13.5px;line-height:1.7}
   .facts div{display:flex;gap:10px}
-  .facts span{flex:0 0 92px;color:var(--ink-3)}
+  .facts span{flex:0 0 88px;color:var(--ink-3)}
   .facts b{flex:1;font-weight:500}
 
-  .status4{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .status4 button{padding:13px 4px;border-radius:10px;border:1px solid var(--line);background:var(--paper);
-    font-size:13.5px;font-weight:500;color:var(--ink-2);line-height:1.25}
-  .status4 button[aria-pressed="true"]{color:#fff;border-color:transparent;font-weight:600}
-  .status4 button.f[aria-pressed="true"]{background:var(--green)}
-  .status4 button.g[aria-pressed="true"]{background:#59636d}
-  .status4 button.m[aria-pressed="true"]{background:var(--red)}
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .seg button{padding:12px 4px;border-radius:10px;border:1px solid var(--line);background:var(--paper);
+    font-size:13px;font-weight:500;color:var(--ink-2);line-height:1.25}
+  .seg button[aria-pressed="true"]{color:#fff;border-color:transparent;font-weight:600}
+  .seg button.n[aria-pressed="true"]{background:var(--amber)}
+  .seg button.mi[aria-pressed="true"]{background:var(--green)}
+  .seg button.ma[aria-pressed="true"]{background:var(--blue)}
 
   .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .shot{position:relative;aspect-ratio:3/4;border:1px dashed var(--line);border-radius:10px;background:var(--sunk);
@@ -121,9 +135,6 @@
 
   .tagwrap{display:flex;gap:8px}
   .tagwrap input{flex:1;font-variant-numeric:tabular-nums}
-  .scan{flex:0 0 auto;background:var(--green);color:#fff;border:0;border-radius:9px;padding:0 15px;
-    font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px}
-  .scan svg{width:18px;height:18px}
 
   .savebar{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--paper);border-top:1px solid var(--line);
     padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom));display:none;gap:10px}
@@ -148,175 +159,197 @@
   .toast.on{opacity:1;transform:translate(-50%,0)}
   @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 
-  .gate{padding:var(--pad);padding-top:34px}
-  .gate h1{font-size:22px;margin:0 0 8px;letter-spacing:-.01em}
+  .picker{position:fixed;inset:0;z-index:90;background:var(--sunk);overflow-y:auto;display:none;padding-bottom:30px}
+  .picker.on{display:block}
 </style>
 </head>
 <body>
 
-<div id="gate" class="gate" style="display:none">
-  <h1>Load your purchase list</h1>
-  <p class="note">This app ships with no data in it. Pick the <strong>catalog.json</strong> file on your phone to load the purchase records. It stays on this device — nothing is uploaded, and nothing sensitive lives in the published page.</p>
-  <button class="btn primary" id="gatePick">Choose catalog.json</button>
-  <button class="btn" id="gateSkip">Skip — work without purchase records</button>
-  <input type="file" id="gateFile" accept=".json,application/json" hidden>
-</div>
-
-<div id="app" style="display:none">
 <div class="top">
   <div class="top-row">
     <div class="top-room">
       <b id="tRoom">No room set</b>
       <span id="tBldg">Tap Change to set where you are</span>
     </div>
-    <div class="prog"><b id="tProg">0</b><span>reviewed</span></div>
+    <div class="prog"><b id="tProg">0</b><span>items</span></div>
     <button class="chg" id="btnRoom">Change</button>
   </div>
 </div>
 
 <div class="tabs" role="tablist">
-  <button role="tab" aria-selected="true" data-p="po">Purchases</button>
-  <button role="tab" aria-selected="false" data-p="unk">Unknown <span id="nUnk">(0)</span></button>
+  <button role="tab" aria-selected="true" data-p="items">Items</button>
+  <button role="tab" aria-selected="false" data-p="flags">Flags <span id="nFlag">(0)</span></button>
   <button role="tab" aria-selected="false" data-p="exp">Export</button>
 </div>
 
-<section class="pane on" id="p-po">
-  <div class="chips" id="chips">
-    <button data-f="todo" aria-pressed="true">To review</button>
-    <button data-f="equip" aria-pressed="false">Equipment</button>
-    <button data-f="major" aria-pressed="false">Major ($5k+)</button>
-    <button data-f="all" aria-pressed="false">Everything</button>
-    <button data-f="found" aria-pressed="false">Found</button>
+<section class="pane on" id="p-items">
+  <div class="searchbar">
+    <input type="search" id="q" placeholder="Search what you already recorded" autocomplete="off">
+    <button class="iconbtn" id="btnScanFind" title="Scan to find">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <path d="M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg>
+    </button>
   </div>
-  <label style="margin-bottom:10px"><input type="search" id="q" placeholder="Search description, supplier, PO" autocomplete="off"></label>
-  <div id="poList"></div>
+  <button class="btn primary" id="btnNew">Record a new item</button>
+  <div id="itemList"></div>
 </section>
 
-<section class="pane" id="p-unk">
-  <p class="note">Photograph anything you can't identify. No typing needed — name it later from the photos.</p>
-  <button class="btn primary" id="btnAddUnk">Photograph an item</button>
-  <div id="unkList"></div>
+<section class="pane" id="p-flags">
+  <p class="note">Items worth $5,000 or more with no silver tag. <strong>This list is for Asset Management</strong>, not the inventory spreadsheet.</p>
+  <div id="flagList"></div>
 </section>
 
 <section class="pane" id="p-exp">
   <div class="card">
-    <h2>Identify the unknowns</h2>
-    <p class="note">Saves your unknown items' photos plus a <strong>match-request.json</strong> manifest. Upload both in a chat, get back a <strong>matches.json</strong>, then import it here to link them to purchases.</p>
-    <button class="btn primary" id="btnMatchReq">Export match request</button>
-    <button class="btn" id="btnMatchIn">Import matches.json</button>
-    <input type="file" id="matchFile" accept=".json,application/json" hidden>
-  </div>
-  <div class="card">
     <h2>Spreadsheet</h2>
-    <p class="note">Every purchase line with status, room, photos and price, plus your unknown and off-PO items. Export after each room.</p>
+    <p class="note">One row per item per room, plus tabs for room totals and untagged items.</p>
     <button class="btn primary" id="btnXlsx">Export spreadsheet</button>
     <button class="btn" id="btnCsv">Export CSV instead</button>
   </div>
   <div class="card">
     <h2>Photos</h2>
-    <p class="note">Saved to Downloads, each named after its PO and line so the spreadsheet's photo column matches. <strong id="photoN">0 photos</strong> stored.</p>
+    <p class="note">Named after each item ID so the photo column matches. <strong id="photoN">0 photos</strong> stored.</p>
     <button class="btn" id="btnPhotos">Save photos to phone</button>
   </div>
   <div class="card">
     <h2>Backup</h2>
-    <p class="note">One file holding every record <em>and</em> every photo together. This is the copy that keeps pictures bound to purchases permanently.</p>
+    <p class="note">Every item and every photo in one file. Do this after each room.</p>
     <button class="btn" id="btnBackup">Save backup file</button>
     <button class="btn" id="btnRestore">Restore from backup</button>
     <input type="file" id="restoreFile" accept=".json,application/json" hidden>
   </div>
   <div class="card">
-    <h2>This device</h2>
-    <p class="note"><strong id="statLine">Nothing recorded yet.</strong> <span id="catLine"></span></p>
-    <button class="btn" id="btnCatalog">Replace purchase list</button>
+    <h2>Ask me to identify things</h2>
+    <p class="note"><strong id="askN">0 waiting</strong>. Exports their photos plus an <strong>id-request.json</strong> manifest. Send both in a chat, then import the answer here.</p>
+    <button class="btn primary" id="btnIdReq">Export ID request</button>
+    <button class="btn" id="btnIdIn">Import identifications</button>
+    <input type="file" id="idFile" accept=".json,application/json" hidden>
+  </div>
+  <div class="card">
+    <h2>Setup</h2>
+    <p class="note"><strong id="statLine"></strong> <span id="catLine"></span></p>
+    <button class="btn" id="btnDept">Set department number</button>
+    <button class="btn" id="btnCatalog">Load purchase list (catalog.json)</button>
     <button class="btn danger" id="btnWipe">Erase everything</button>
+    <input type="file" id="catFile" accept=".json,application/json" hidden>
   </div>
 </section>
-</div>
 
 <div class="sheet" id="sheet">
-  <div class="sheet-top">
-    <b id="shTitle"></b>
-    <button id="shClose">Close</button>
-  </div>
+  <div class="sheet-top"><b id="shTitle"></b><button id="shClose">Close</button></div>
   <div class="sheet-body">
-    <div class="card" id="shFactsCard">
-      <h2>Purchase record</h2>
-      <div class="facts" id="shFacts"></div>
-    </div>
-    <div class="card" id="shStatusCard">
-      <h2>Is it still here?</h2>
-      <div class="status4">
-        <button class="f" data-s="found" aria-pressed="false">Found it</button>
-        <button class="g" data-s="gone" aria-pressed="false">Used up / tossed</button>
-        <button class="m" data-s="missing" aria-pressed="false">Can't find</button>
-      </div>
-    </div>
-    <div id="shFoundOnly">
-      <div class="card">
-        <h2>Photos</h2>
-        <div class="shots">
-          <div class="shot" data-slot="item">
-            <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.4"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
-            <span>The item</span><input type="file" accept="image/*" capture="environment">
-          </div>
-          <div class="shot" data-slot="tag">
-            <svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>
-            <span>Label / tag</span><input type="file" accept="image/*" capture="environment">
-          </div>
-          <div class="shot" data-slot="serial">
-            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>
-            <span>Serial plate</span><input type="file" accept="image/*" capture="environment">
-          </div>
-        </div>
-        <p class="note" id="unkHint" style="margin:11px 0 0;display:none">For an unknown item, get the maker's name and any model number in frame. That is what identification depends on.</p>
-      </div>
-      <div class="card">
-        <h2>Where and what</h2>
-        <label><span>UND tag / barcode</span>
-          <div class="tagwrap">
-            <input type="text" id="shTag" autocomplete="off" placeholder="Scan or type">
-            <button class="scan" id="shScan">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-                <path d="M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg>Scan
-            </button>
-          </div>
-        </label>
-        <label id="shNameWrap" style="display:none"><span>What is it, if you know</span>
-          <input type="text" id="shName" autocomplete="off" placeholder="Leave blank and I'll work it out from the photos"></label>
-        <div class="two" style="margin-bottom:12px">
-          <label><span>Building</span><input type="text" id="shBldg" autocomplete="off"></label>
-          <label><span>Room</span><input type="text" id="shRoom" autocomplete="off"></label>
-        </div>
-        <label><span>Where in the room</span><input type="text" id="shWhere" autocomplete="off" placeholder="North bench, by the window"></label>
-        <label><span>Serial number</span><input type="text" id="shSerial" autocomplete="off"></label>
-        <div class="two" style="margin-bottom:12px">
-          <label><span>Qty on hand</span><input type="number" id="shQty" min="0" inputmode="numeric"></label>
-          <label><span>Condition</span>
-            <select id="shCond">
-              <option>In use</option><option>Spare</option><option>Broken</option>
-              <option>Under repair</option><option>Surplus candidate</option>
-            </select></label>
-        </div>
-        <label style="margin:0"><span>Responsible person</span><input type="text" id="shOwner" autocomplete="off"></label>
-      </div>
-    </div>
+    <div class="dupwarn" id="dupWarn" style="display:none"></div>
+
     <div class="card">
-      <h2>Notes</h2>
-      <label style="margin:0"><textarea id="shNotes" placeholder="Anything that would help identify it, or that the next person needs to know"></textarea></label>
+      <h2>What is it</h2>
+      <label><span>Name</span><input type="text" id="fName" autocomplete="off" placeholder="Leave blank if unsure — photograph it and ask later"></label>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <input type="checkbox" id="fAsk" style="width:22px;height:22px;flex:0 0 auto;margin:0">
+        <span style="margin:0;font-size:14px;color:var(--ink)">Send this one to Claude to identify</span>
+      </label>
+      <div class="two" style="margin-bottom:12px">
+        <label><span>Maker</span><input type="text" id="fMaker" autocomplete="off"></label>
+        <label><span>Model</span><input type="text" id="fModel" autocomplete="off"></label>
+      </div>
+      <label style="margin:0"><span>Category</span>
+        <select id="fCat">
+          <option value="">Choose…</option>
+          <option>3D Printer / Bioprinter</option><option>Computer</option><option>Laptop</option>
+          <option>Monitor</option><option>Lab Equipment</option><option>Imaging / Microscopy</option>
+          <option>Electronics / Test</option><option>Hand Tools</option><option>Machine Shop</option>
+          <option>Components / Parts</option><option>Glassware</option><option>Network / AV</option>
+          <option>Furniture</option><option>Other</option>
+        </select></label>
     </div>
+
+    <div class="card">
+      <h2>Photos</h2>
+      <div class="shots">
+        <div class="shot" data-slot="item">
+          <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.4"/><path d="M8 6l1.4-2h5.2L16 6"/></svg>
+          <span>The item</span><input type="file" accept="image/*" capture="environment">
+        </div>
+        <div class="shot" data-slot="tag">
+          <svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>
+          <span>UND tag</span><input type="file" accept="image/*" capture="environment">
+        </div>
+        <div class="shot" data-slot="serial">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>
+          <span>Serial plate</span><input type="file" accept="image/*" capture="environment">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Identity</h2>
+      <label><span>UND asset tag</span>
+        <div class="tagwrap">
+          <input type="text" id="fTag" autocomplete="off" placeholder="Scan or type">
+          <button class="iconbtn" id="btnScanTag">Scan</button>
+        </div></label>
+      <label style="margin-bottom:6px"><span>Tag status</span></label>
+      <div class="seg" style="margin-bottom:12px">
+        <button class="n"  data-t="none"  aria-pressed="true">No tag</button>
+        <button class="mi" data-t="minor" aria-pressed="false">Minor tag</button>
+        <button class="ma" data-t="major" aria-pressed="false">Silver major</button>
+      </div>
+      <label><span>Serial number</span><input type="text" id="fSerial" autocomplete="off"></label>
+      <label style="margin:0"><span>Product barcode (UPC on the box)</span>
+        <div class="tagwrap">
+          <input type="text" id="fUpc" autocomplete="off" placeholder="Makes re-finding this instant">
+          <button class="iconbtn" id="btnScanUpc">Scan</button>
+        </div></label>
+    </div>
+
+    <div class="card">
+      <h2>Where the copies are</h2>
+      <div id="locBox"></div>
+      <button class="btn" id="btnAddLoc" style="margin:10px 0 0">Add a location</button>
+      <p class="note" id="uniqNote" style="margin:10px 0 0;display:none">Has a serial or asset tag, so it's tracked as one unique unit. A second one would be its own record.</p>
+    </div>
+
+    <div class="card">
+      <h2>Value and care</h2>
+      <label><span>Replacement cost today, per unit (USD)</span>
+        <input type="number" id="fRepl" min="0" step="0.01" inputmode="decimal" placeholder="What it would cost to buy again"></label>
+      <div class="two" style="margin-bottom:12px">
+        <label><span>Condition</span>
+          <select id="fCond"><option>In use</option><option>Spare</option><option>Broken</option>
+            <option>Under repair</option><option>Surplus candidate</option></select></label>
+        <label><span>Responsible person</span><input type="text" id="fOwner" autocomplete="off"></label>
+      </div>
+      <label style="margin:0"><span>Notes</span><textarea id="fNotes"></textarea></label>
+    </div>
+
+    <div class="card">
+      <h2>Purchase record</h2>
+      <div class="facts" id="poFacts" style="margin-bottom:11px"></div>
+      <button class="btn" id="btnLinkPo" style="margin:0">Link a purchase order</button>
+      <button class="btn" id="btnUnlinkPo" style="margin:10px 0 0;display:none">Remove the link</button>
+    </div>
+
+    <button class="btn danger" id="btnDelItem">Delete this item</button>
   </div>
 </div>
 
 <div class="savebar" id="savebar">
-  <button class="ghost" id="btnSkip">Cancel</button>
+  <button class="ghost" id="btnCancel">Cancel</button>
   <button id="btnSave">Save</button>
+</div>
+
+<div class="picker" id="picker">
+  <div class="sheet-top"><b>Find the purchase</b><button id="pkClose">Cancel</button></div>
+  <div style="padding:var(--pad)">
+    <label style="margin-bottom:10px"><input type="search" id="pkQ" placeholder="Search description or supplier" autocomplete="off"></label>
+    <div id="pkList"></div>
+  </div>
 </div>
 
 <div class="scanner" id="scanner">
   <video id="vid" playsinline muted></video>
   <div class="reticle"></div>
-  <div class="hint">Hold the tag inside the box</div>
+  <div class="hint" id="scanHint">Hold the barcode inside the box</div>
   <button class="close" id="scanClose">Cancel</button>
 </div>
 
@@ -324,18 +357,18 @@
 
 <script>
 "use strict";
-
-/* ================= storage ================= */
-const DB="bme_inv3", ST="recs", MT="meta";
+const DB="bme_inv4", ST="items", MT="meta";
 let db=null, mem=[], useMem=false;
 function openDB(){return new Promise(res=>{let r;try{r=indexedDB.open(DB,1)}catch(e){useMem=true;return res(null)}
   r.onupgradeneeded=()=>{const d=r.result;
-    if(!d.objectStoreNames.contains(ST))d.createObjectStore(ST,{keyPath:"key"});
+    if(!d.objectStoreNames.contains(ST))d.createObjectStore(ST,{keyPath:"id"});
     if(!d.objectStoreNames.contains(MT))d.createObjectStore(MT,{keyPath:"k"})};
-  r.onsuccess=()=>res(r.result); r.onerror=()=>{useMem=true;res(null)}; r.onblocked=()=>{useMem=true;res(null)}})}
+  r.onsuccess=()=>res(r.result);r.onerror=()=>{useMem=true;res(null)};r.onblocked=()=>{useMem=true;res(null)}})}
 function tx(s,m){return db.transaction(s,m).objectStore(s)}
-function put(rec){if(useMem){const i=mem.findIndex(m=>m.key===rec.key);i>-1?mem[i]=rec:mem.push(rec);return Promise.resolve()}
-  return new Promise((ok,no)=>{const r=tx(ST,"readwrite").put(rec);r.onsuccess=ok;r.onerror=()=>no(r.error)})}
+function put(o){if(useMem){const i=mem.findIndex(m=>m.id===o.id);i>-1?mem[i]=o:mem.push(o);return Promise.resolve()}
+  return new Promise((ok,no)=>{const r=tx(ST,"readwrite").put(o);r.onsuccess=ok;r.onerror=()=>no(r.error)})}
+function del(id){if(useMem){mem=mem.filter(m=>m.id!==id);return Promise.resolve()}
+  return new Promise((ok,no)=>{const r=tx(ST,"readwrite").delete(id);r.onsuccess=ok;r.onerror=()=>no(r.error)})}
 function all(){if(useMem)return Promise.resolve(mem.slice());
   return new Promise((ok,no)=>{const r=tx(ST,"readonly").getAll();r.onsuccess=()=>ok(r.result||[]);r.onerror=()=>no(r.error)})}
 function wipe(){if(useMem){mem=[];return Promise.resolve()}
@@ -345,132 +378,139 @@ function mGet(k){if(useMem)return Promise.resolve(null);
 function mSet(k,v){if(useMem)return Promise.resolve();
   return new Promise(ok=>{const r=tx(MT,"readwrite").put({k,v});r.onsuccess=ok;r.onerror=ok})}
 
-/* ================= state ================= */
-let ITEMS=[], CATMETA=null;
-let recs={}, ctx={building:"Columbia Hall",room:""}, sticky={owner:""};
-let cur=null, shots={item:null,tag:null,serial:null}, filter="todo", who="";
+let items={}, CAT=[], CATMETA=null;
+let ctx={building:"Columbia Hall",room:""}, who="", dept="";
+let cur=null, shots={item:null,tag:null,serial:null}, locs=[], curPo=null, tagStatus="none", scanTarget=null;
 
 const el=id=>document.getElementById(id);
 function toast(m){const t=el("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2600)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function money(v){return v==null||v===""?"":"$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
-function keyOf(it){return "po:"+it.po+":"+it.ln}
-function findItem(po,ln){return ITEMS.find(i=>i.po===po&&String(i.ln)===String(ln))||null}
+function norm(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
+function qtyOf(it){return (it.locs||[]).reduce((a,l)=>a+(Number(l.qty)||0),0)}
+function isUnique(it){return !!((it.serial&&String(it.serial).trim())||(it.tag&&String(it.tag).trim()))}
+function nextId(){let mx=0;Object.keys(items).forEach(k=>{const m=/^BME-(\d+)$/.exec(k);if(m)mx=Math.max(mx,+m[1])});
+  return "BME-"+String(mx+1).padStart(3,"0")}
+function findCat(po,ln){return CAT.find(x=>x.po===po&&String(x.ln)===String(ln))||null}
 
-/* ================= images ================= */
 function shrink(file,max){return new Promise((res,rej)=>{
-  const url=URL.createObjectURL(file), img=new Image();
+  const url=URL.createObjectURL(file),img=new Image();
   img.onload=()=>{let w=img.width,h=img.height;const s=Math.min(1,max/Math.max(w,h));
     w=Math.round(w*s);h=Math.round(h*s);
     const cv=document.createElement("canvas");cv.width=w;cv.height=h;
     cv.getContext("2d").drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
     cv.toBlob(b=>b?res(b):rej(new Error("encode")),"image/jpeg",.82)};
-  img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("read"))};
-  img.src=url})}
+  img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("read"))};img.src=url})}
 
-/* ================= barcode ================= */
 let stream=null,scanning=false,det=null;
-async function startScan(){
-  if(!("BarcodeDetector" in window)){toast("This browser can't scan. Type it instead.");el("shTag").focus();return}
+async function startScan(target,hint){
+  scanTarget=target;el("scanHint").textContent=hint||"Hold the barcode inside the box";
+  if(!("BarcodeDetector" in window)){toast("This browser can't scan. Type it instead.");return}
   try{
     if(!det){const fs=await window.BarcodeDetector.getSupportedFormats();
-      const want=["code_128","code_39","codabar","ean_13","upc_a","itf","qr_code","data_matrix"].filter(f=>fs.includes(f));
+      const want=["code_128","code_39","codabar","ean_13","ean_8","upc_a","upc_e","itf","qr_code","data_matrix"].filter(f=>fs.includes(f));
       det=new window.BarcodeDetector(want.length?{formats:want}:undefined)}
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280}},audio:false})
-  }catch(e){toast("Camera unavailable. Type it instead.");el("shTag").focus();return}
+  }catch(e){toast("Camera unavailable. Type it instead.");return}
   const v=el("vid");v.srcObject=stream;await v.play().catch(()=>{});
   el("scanner").classList.add("on");scanning=true;loop()}
 async function loop(){
   if(!scanning)return;const v=el("vid");
   if(v.readyState>=2){try{const f=await det.detect(v);
     if(f&&f.length){const c=String(f[0].rawValue||"").trim();
-      if(c){if(navigator.vibrate)navigator.vibrate(45);el("shTag").value=c;stopScan();toast("Scanned "+c);return}}}catch(e){}}
+      if(c){if(navigator.vibrate)navigator.vibrate(45);onScan(c);return}}}catch(e){}}
   requestAnimationFrame(loop)}
 function stopScan(){scanning=false;el("scanner").classList.remove("on");
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}el("vid").srcObject=null}
+function onScan(code){
+  stopScan();
+  if(scanTarget==="find"){
+    const hit=Object.values(items).find(i=>(i.upc&&i.upc===code)||(i.tag&&i.tag===code));
+    if(hit){openItem(hit);toast("Found "+hit.id)}else{el("q").value=code;renderItems();toast("No item with that code yet")}
+    return}
+  if(scanTarget==="tag"){el("fTag").value=code;if(tagStatus==="none")setTag("minor");checkUnique()}
+  if(scanTarget==="upc"){el("fUpc").value=code}
+  toast("Scanned "+code)}
 
-/* ================= rendering ================= */
-function statusOf(k){const r=recs[k];return r?r.status:""}
-function passes(it){
-  const s=statusOf(keyOf(it));
-  if(filter==="todo")return !s;
-  if(filter==="found")return s==="found";
-  if(filter==="equip")return it.k==="equip"||it.k==="major";
-  if(filter==="major")return it.k==="major";
-  return true}
-function thumbOf(r){return r&&r.photos&&(r.photos.item||r.photos.tag||r.photos.serial)}
-function renderPO(){
-  const box=el("poList");
-  if(!ITEMS.length){
-    box.innerHTML='<div class="empty"><b>No purchase list loaded</b>Load catalog.json from the Export tab to see purchases here.</div>';return}
-  const q=el("q").value.trim().toLowerCase();
-  const list=ITEMS.filter(it=>{
-    if(!passes(it))return false;
-    if(!q)return true;
-    return (it.desc+" "+it.sup+" "+it.po+" "+(it.mfr||"")+" "+(it.cat||"")).toLowerCase().includes(q)});
-  if(!list.length){
-    box.innerHTML='<div class="empty"><b>'+(filter==="todo"?"All reviewed":"Nothing here")+'</b>'+
-      (filter==="todo"?"Switch to Everything to revisit items.":"Try another filter or search.")+'</div>';return}
-  box.innerHTML="";
-  list.forEach(it=>{
-    const k=keyOf(it),r=recs[k],s=r?r.status:"none";
-    const row=document.createElement("div");row.className="po s-"+(s||"none");
-    const ph=thumbOf(r);
-    const img=document.createElement("img");img.className="thumb";img.alt="";
-    if(ph)img.src=URL.createObjectURL(ph);
-    const b=document.createElement("div");b.className="body";
-    const kt=it.k==="major"?'<span class="tag major">MAJOR</span>':
-             it.k==="equip"?'<span class="tag equip">equipment</span>':
-             it.k==="other"?'<span class="tag other">not physical</span>':"";
-    b.innerHTML="<b>"+esc(String(it.desc).slice(0,90))+'</b><div class="meta">'+kt+
-      '<span class="tag price">'+esc(money(it.u))+"</span>"+esc(it.d)+" · "+esc(it.sup)+
-      (it.rm?" · rm "+esc(it.rm):"")+"</div>";
-    row.append(img,b);row.onclick=()=>openSheet(it);box.appendChild(row)})}
-
-function renderUnk(){
-  const list=Object.values(recs).filter(r=>r.unk);
-  el("nUnk").textContent="("+list.length+")";
-  const box=el("unkList");
-  if(!list.length){box.innerHTML='<div class="empty"><b>Nothing here yet</b>Tap the button above when you meet something you can\u2019t name.</div>';return}
-  box.innerHTML="";
-  list.sort((a,b)=>a.key<b.key?1:-1).forEach(r=>{
-    const row=document.createElement("div");
-    const matched=!!r.matchPo;
-    row.className="po "+(matched?"s-found":"s-unidentified");
-    const ph=thumbOf(r);
-    const img=document.createElement("img");img.className="thumb";img.alt="";
-    if(ph)img.src=URL.createObjectURL(ph);
-    const b=document.createElement("div");b.className="body";
-    let title=r.name||(matched?r.matchDesc:"Unidentified item");
-    let meta="";
-    if(matched){
-      const conf=r.matchConf?(" · "+r.matchConf):"";
-      meta='<span class="tag equip">matched</span><span class="tag">'+esc(r.matchPo)+"</span>"+
-           esc(r.matchDesc||"").slice(0,50)+esc(conf);
-    }else{
-      meta='<span class="tag major">needs ID</span>'+esc(r.key.replace("u:","U-"))+
-           " · rm "+esc(r.room||"?");
-    }
-    b.innerHTML="<b>"+esc(title)+'</b><div class="meta">'+meta+"</div>";
-    row.append(img,b);row.onclick=()=>openSheet(null,r.key);box.appendChild(row)})}
-
+function thumbOf(it){return it.photos&&(it.photos.item||it.photos.tag||it.photos.serial)}
+function needsTag(it){
+  const v=Math.max(Number(it.repl)||0,(it.po&&it.po.u)?Number(it.po.u):0);
+  return it.tagStatus!=="major"&&v>=5000}
+function flagged(){return Object.values(items).filter(needsTag)}
+function pending(){return Object.values(items).filter(i=>(!i.name||i.ask)&&thumbOf(i))}
+function rowFor(it){
+  const row=document.createElement("div");
+  row.className="row "+(needsTag(it)?"flagged":(it.tagStatus==="major"?"major":(it.name?"plain":"dim")));
+  const ph=thumbOf(it);
+  const img=document.createElement("img");img.className="thumb";img.alt="";
+  if(ph)img.src=URL.createObjectURL(ph);
+  const b=document.createElement("div");b.className="body";
+  const tgs=(it.tagStatus==="major"?'<span class="tg major">silver tag</span>':
+             it.tagStatus==="minor"?'<span class="tg minor">minor tag</span>':
+             '<span class="tg none">no tag</span>')+(it.po?'<span class="tg po">'+esc(it.po.po)+"</span>":"");
+  const where=(it.locs||[]).map(l=>esc(l.room||"?")+(Number(l.qty)>1?" \u00d7"+l.qty:"")).join(", ");
+  b.innerHTML="<b>"+esc(it.name||"Unnamed item")+'</b><div class="meta"><span class="tg">'+esc(it.id)+"</span>"+tgs+
+    "<br>"+esc([it.maker,it.model].filter(Boolean).join(" "))+((it.maker||it.model)?" \u00b7 ":"")+(where||"no location")+"</div>";
+  const q=document.createElement("div");q.className="qty";
+  q.innerHTML="<b>"+qtyOf(it)+"</b><span>"+(isUnique(it)?"unit":"total")+"</span>";
+  row.append(img,b,q);row.onclick=()=>openItem(it);return row}
+function renderItems(){
+  const q=norm(el("q").value);
+  const list=Object.values(items).sort((a,b)=>a.id<b.id?1:-1).filter(it=>!q||
+    norm([it.name,it.maker,it.model,it.id,it.serial,it.tag,it.upc,it.cat,it.po?it.po.desc:""].join(" ")).includes(q));
+  const box=el("itemList");
+  if(!list.length){box.innerHTML=Object.keys(items).length
+    ?'<div class="empty"><b>Nothing matches</b>Record it as new if it isn\u2019t here.</div>'
+    :'<div class="empty"><b>No items yet</b>Start with the first thing by the door.</div>';return}
+  box.innerHTML="";list.forEach(it=>box.appendChild(rowFor(it)))}
+function renderFlags(){
+  const f=flagged();el("nFlag").textContent="("+f.length+")";
+  const box=el("flagList");
+  if(!f.length){box.innerHTML='<div class="empty"><b>Nothing flagged</b>Items at $5,000+ with no silver tag show here.</div>';return}
+  box.innerHTML="";f.forEach(it=>box.appendChild(rowFor(it)))}
 function renderTop(){
   el("tRoom").textContent=ctx.room?("Room "+ctx.room):"No room set";
   el("tBldg").textContent=ctx.building||"Tap Change to set where you are";
-  const done=Object.values(recs).filter(r=>!r.unk&&r.status).length;
-  el("tProg").textContent=ITEMS.length?(done+"/"+ITEMS.length):String(done);
-  let np=0;Object.values(recs).forEach(r=>{if(r.photos)["item","tag","serial"].forEach(s=>{if(r.photos[s])np++})});
+  el("tProg").textContent=Object.keys(items).length;
+  let np=0;Object.values(items).forEach(i=>{if(i.photos)["item","tag","serial"].forEach(s=>{if(i.photos[s])np++})});
   el("photoN").textContent=np+(np===1?" photo":" photos");
-  const f=Object.values(recs).filter(r=>r.status==="found").length;
-  const g=Object.values(recs).filter(r=>r.status==="gone").length;
-  const m=Object.values(recs).filter(r=>r.status==="missing").length;
-  const u=Object.values(recs).filter(r=>r.unk&&!r.matchPo).length;
-  el("statLine").textContent=f+" found, "+g+" used up, "+m+" not found, "+u+" awaiting ID.";
-  el("catLine").textContent=CATMETA?("Purchase list: "+ITEMS.length+" lines, generated "+CATMETA+"."):"No purchase list loaded.";
-}
-function renderAll(){renderTop();renderPO();renderUnk()}
+  const units=Object.values(items).reduce((a,i)=>a+qtyOf(i),0);
+  el("statLine").textContent=Object.keys(items).length+" item types, "+units+" units"+
+    (dept?", dept "+dept:", no department number set")+".";
+  el("catLine").textContent=CAT.length?("Purchase list: "+CAT.length+" lines."):"No purchase list loaded.";
+  const p=pending().length;el("askN").textContent=p+(p===1?" item waiting":" items waiting")}
+function renderAll(){renderTop();renderItems();renderFlags()}
 
-/* ================= sheet ================= */
+function renderLocs(){
+  const box=el("locBox");box.innerHTML="";
+  if(!locs.length){box.innerHTML='<p class="note" style="margin:0">No location yet.</p>';return}
+  locs.forEach((l,idx)=>{
+    const d=document.createElement("div");d.className="loc";
+    const t=document.createElement("div");t.className="lt";
+    t.innerHTML="<b>"+esc(l.room||"?")+"</b><span>"+esc(l.building||"")+(l.where?" \u00b7 "+esc(l.where):"")+"</span>";
+    const st=document.createElement("div");st.className="step";
+    const minus=document.createElement("button");minus.textContent="\u2212";
+    const n=document.createElement("b");n.textContent=l.qty;
+    const plus=document.createElement("button");plus.textContent="+";
+    minus.onclick=()=>{l.qty=Math.max(0,(Number(l.qty)||0)-1);renderLocs()};
+    plus.onclick=()=>{l.qty=(Number(l.qty)||0)+1;renderLocs()};
+    st.append(minus,n,plus);
+    const x=document.createElement("button");x.className="locdel";x.textContent="remove";
+    x.onclick=()=>{locs.splice(idx,1);renderLocs()};
+    const w=document.createElement("div");w.style.cssText="display:flex;flex-direction:column;align-items:flex-end;gap:2px";
+    w.append(st,x);d.append(t,w);box.appendChild(d)});
+  const tot=document.createElement("p");tot.className="note";tot.style.margin="10px 0 0";
+  tot.innerHTML="<strong>Total: "+locs.reduce((a,l)=>a+(Number(l.qty)||0),0)+"</strong>";
+  box.appendChild(tot)}
+function addLoc(){
+  const b=prompt("Building",ctx.building||"Columbia Hall");if(b===null)return;
+  const r=prompt("Room",ctx.room||"");if(r===null)return;
+  const w=prompt("Where in the room (shelf, cabinet, bench)","");if(w===null)return;
+  const ex=locs.find(l=>l.room===r.trim()&&norm(l.where)===norm(w));
+  if(ex)ex.qty=(Number(ex.qty)||0)+1;
+  else locs.push({building:b.trim(),room:r.trim(),where:w.trim(),qty:1});
+  renderLocs()}
+
 function paintShot(slot){
   const box=document.querySelector('.shot[data-slot="'+slot+'"]');
   box.querySelectorAll("img,.x").forEach(n=>n.remove());
@@ -481,118 +521,115 @@ function paintShot(slot){
     const x=document.createElement("button");x.className="x";x.type="button";x.textContent="\u00d7";
     x.setAttribute("aria-label","Remove photo");
     x.onclick=e=>{e.stopPropagation();e.preventDefault();shots[slot]=null;paintShot(slot)};
-    box.appendChild(x)
-  }else box.classList.remove("filled")}
-function setStatusUI(s){
-  document.querySelectorAll(".status4 button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===s)));
-  el("shFoundOnly").style.display=(s==="found")?"":"none"}
-function row(k,v){return "<div><span>"+esc(k)+"</span><b>"+esc(v)+"</b></div>"}
-
-function openSheet(item,unkKey){
-  const key=item?keyOf(item):unkKey;
-  const r=recs[key]||null;
-  const isUnk=!item;
-  cur={key,item:item||null,isUnk};
-
-  el("shNameWrap").style.display=isUnk?"":"none";
-  el("unkHint").style.display=isUnk?"":"none";
-  el("shStatusCard").style.display=isUnk?"none":"";
-
-  if(item){
-    el("shTitle").textContent=String(item.desc).slice(0,80);
-    el("shFactsCard").style.display="";
-    el("shFacts").innerHTML=
-      row("PO",item.po+" line "+item.ln)+row("Ordered",item.d)+row("Supplier",item.sup)+
-      (item.mfr?row("Maker",item.mfr):"")+(item.cat?row("Mfr cat #",item.cat):"")+
-      row("Unit price",money(item.u))+(item.qty!=null?row("Qty ordered",item.qty):"")+
-      (item.acct?row("Account",item.acct+(String(item.acct).startsWith("69")?"  (major equipment)":"")):"")+
-      (item.rm?row("Shipped to","room "+item.rm):"")+(item.buy?row("Ordered by",item.buy):"");
+    box.appendChild(x)}else box.classList.remove("filled")}
+function setTag(t){tagStatus=t;
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.t===t)))}
+function fact(k,v){return "<div><span>"+esc(k)+"</span><b>"+esc(v)+"</b></div>"}
+function paintPo(){
+  if(curPo){
+    el("poFacts").innerHTML=fact("PO",curPo.po+" line "+curPo.ln)+fact("Ordered",curPo.d)+
+      fact("Supplier",curPo.sup)+fact("Unit price",money(curPo.u))+
+      fact("Description",String(curPo.desc).slice(0,70));
+    el("btnLinkPo").textContent="Change the linked purchase";el("btnUnlinkPo").style.display=""
   }else{
-    el("shTitle").textContent=r?(r.name||"Unidentified item"):"New item";
-    if(r&&r.matchPo){
-      const m=findItem(r.matchPo,r.matchLn);
-      el("shFactsCard").style.display="";
-      el("shFacts").innerHTML=row("Matched to",r.matchPo+" line "+r.matchLn)+
-        row("Description",r.matchDesc||(m?m.desc:""))+
-        (r.matchConf?row("Confidence",r.matchConf):"")+
-        (m?row("Ordered",m.d)+row("Supplier",m.sup)+row("Unit price",money(m.u)):"");
-    }else el("shFactsCard").style.display="none";
-  }
-  const s=r?r.status:(isUnk?"found":"");
-  setStatusUI(isUnk?"found":s);
-  el("shName").value  = r?(r.name||""):"";
-  el("shTag").value   = r?(r.tag||""):"";
-  el("shBldg").value  = r?(r.building||ctx.building):ctx.building;
-  el("shRoom").value  = r?(r.room||ctx.room):ctx.room;
-  el("shWhere").value = r?(r.where||""):"";
-  el("shSerial").value= r?(r.serial||""):"";
-  el("shQty").value   = r&&r.qty!=null?r.qty:(item&&item.qty!=null?item.qty:1);
-  el("shCond").value  = r?(r.cond||"In use"):"In use";
-  el("shOwner").value = r?(r.owner||sticky.owner):sticky.owner;
-  el("shNotes").value = r?(r.notes||""):"";
-  shots = r&&r.photos?{item:r.photos.item||null,tag:r.photos.tag||null,serial:r.photos.serial||null}
+    el("poFacts").innerHTML='<div style="color:var(--ink-3)">No purchase linked. Most older equipment will not have one.</div>';
+    el("btnLinkPo").textContent="Link a purchase order";el("btnUnlinkPo").style.display="none"}}
+function checkUnique(){
+  const u=(el("fSerial").value.trim()||el("fTag").value.trim());
+  el("uniqNote").style.display=u?"":"none"}
+function showDupes(){
+  const n=norm(el("fName").value),box=el("dupWarn");
+  if(!n||n.length<3||(cur&&cur.existing)){box.style.display="none";return}
+  const hits=Object.values(items).filter(i=>norm(i.name)&&(norm(i.name).includes(n)||n.includes(norm(i.name))));
+  if(!hits.length){box.style.display="none";return}
+  box.style.display="";
+  box.innerHTML="Already recorded: "+hits.slice(0,3).map(h=>"<b>"+esc(h.id)+" "+esc(h.name)+"</b> (qty "+qtyOf(h)+")").join(", ")+
+    ". If it's the same thing, cancel and add a location to that item instead."}
+
+function openItem(it){
+  cur=it?{id:it.id,existing:true}:{id:nextId(),existing:false};
+  el("shTitle").textContent=it?((it.name||"Unnamed item")+" \u00b7 "+it.id):("New item \u00b7 "+cur.id);
+  el("fName").value=it?it.name||"":"";el("fMaker").value=it?it.maker||"":"";
+  el("fModel").value=it?it.model||"":"";el("fCat").value=it?it.cat||"":"";
+  el("fTag").value=it?it.tag||"":"";el("fSerial").value=it?it.serial||"":"";
+  el("fUpc").value=it?it.upc||"":"";el("fRepl").value=it&&it.repl!=null?it.repl:"";
+  el("fCond").value=it?it.cond||"In use":"In use";el("fOwner").value=it?it.owner||"":"";
+  el("fNotes").value=it?it.notes||"":"";
+  el("fAsk").checked=it?!!it.ask:false;
+  setTag(it?it.tagStatus||"none":"none");
+  locs=it?JSON.parse(JSON.stringify(it.locs||[])):(ctx.room?[{building:ctx.building,room:ctx.room,where:"",qty:1}]:[]);
+  curPo=it&&it.po?Object.assign({},it.po):null;
+  shots=it&&it.photos?{item:it.photos.item||null,tag:it.photos.tag||null,serial:it.photos.serial||null}
                      :{item:null,tag:null,serial:null};
   ["item","tag","serial"].forEach(paintShot);
+  renderLocs();paintPo();checkUnique();showDupes();
+  el("btnDelItem").style.display=it?"":"none";
   el("sheet").classList.add("on");el("savebar").classList.add("on");el("sheet").scrollTop=0}
 function closeSheet(){el("sheet").classList.remove("on");el("savebar").classList.remove("on");cur=null}
 
-async function saveSheet(){
+async function saveItem(){
   if(!cur)return;
-  let status="found";
-  if(!cur.isUnk){
-    const b=document.querySelector('.status4 button[aria-pressed="true"]');
-    if(!b){toast("Pick found, used up, or can't find.");return}
-    status=b.dataset.s;
-  }
-  const prev=recs[cur.key]||{};
-  const rec={
-    key:cur.key, unk:cur.isUnk, status,
-    name:el("shName").value.trim()||prev.name||"",
-    tag:el("shTag").value.trim(), building:el("shBldg").value.trim(), room:el("shRoom").value.trim(),
-    where:el("shWhere").value.trim(), serial:el("shSerial").value.trim(),
-    qty:el("shQty").value===""?null:Number(el("shQty").value),
-    cond:el("shCond").value, owner:el("shOwner").value.trim(), notes:el("shNotes").value.trim(),
+  const name=el("fName").value.trim();
+  if(!name&&!(shots.item||shots.tag||shots.serial)){toast("Give it a name, or photograph it.");return}
+  const prev=items[cur.id]||{};
+  const it={id:cur.id,name,maker:el("fMaker").value.trim(),model:el("fModel").value.trim(),
+    cat:el("fCat").value,tag:el("fTag").value.trim(),tagStatus,ask:el("fAsk").checked,
+    serial:el("fSerial").value.trim(),upc:el("fUpc").value.trim(),
+    repl:el("fRepl").value===""?null:Number(el("fRepl").value),
+    cond:el("fCond").value,owner:el("fOwner").value.trim(),notes:el("fNotes").value.trim(),
+    locs:locs.filter(l=>Number(l.qty)>0),po:curPo,
     photos:{item:shots.item,tag:shots.tag,serial:shots.serial},
-    date:new Date().toISOString().slice(0,10), by:who,
-    matchPo:prev.matchPo||null, matchLn:prev.matchLn||null,
-    matchDesc:prev.matchDesc||null, matchConf:prev.matchConf||null
-  };
-  if(cur.isUnk && !rec.photos.item && !rec.photos.tag && !rec.photos.serial && !rec.name){
-    toast("Take at least one photo, or name it.");return}
-  sticky.owner=rec.owner;
-  if(rec.room){ctx.room=rec.room;ctx.building=rec.building;mSet("ctx",ctx)}
-  try{await put(rec)}catch(e){toast("Could not save. Storage may be full — export now.");return}
-  recs[rec.key]=rec;closeSheet();renderAll();
-  toast(cur&&false?"":(status==="found"?"Saved":status==="gone"?"Marked used up":"Marked not found"))}
+    created:prev.created||new Date().toISOString().slice(0,10),
+    updated:new Date().toISOString().slice(0,10),by:who};
+  try{await put(it)}catch(e){toast("Could not save. Storage may be full — export now.");return}
+  items[it.id]=it;
+  if(it.locs.length){ctx.building=it.locs[0].building;ctx.room=it.locs[0].room;mSet("ctx",ctx)}
+  closeSheet();renderAll();toast(cur.existing?it.id+" updated":it.id+" saved")}
 
-/* ================= export ================= */
-const HEAD=["Record","PO #","PO Line","Order Date","Supplier","Purchase Description","Manufacturer",
- "Mfr Cat #","Account Code","Unit Price","Qty Ordered","Status","Match Confidence","Item Name","UND Tag",
- "Serial Number","Building","Room","Location in Room","Qty On Hand","Condition","Responsible Person",
- "Photo Files","Reviewed On","Reviewed By","Notes"];
-function baseName(r){return r.unk?r.key.replace("u:","U-"):r.key.replace("po:","").replace(":","-L")}
-function photoNames(r){
-  const b=baseName(r),out=[];
-  if(r.photos){if(r.photos.item)out.push(b+".jpg");if(r.photos.tag)out.push(b+"-tag.jpg");
-    if(r.photos.serial)out.push(b+"-serial.jpg")}
-  return out}
+function renderPk(){
+  const q=norm(el("pkQ").value),box=el("pkList");
+  if(!CAT.length){box.innerHTML='<div class="empty"><b>No purchase list loaded</b>Load catalog.json in the Export tab.</div>';return}
+  const list=CAT.filter(i=>!q||norm(i.desc+" "+i.sup+" "+i.po).includes(q)).slice(0,60);
+  if(!list.length){box.innerHTML='<div class="empty"><b>Nothing matches</b></div>';return}
+  box.innerHTML="";
+  list.forEach(i=>{
+    const d=document.createElement("div");d.className="row plain";
+    const b=document.createElement("div");b.className="body";
+    b.innerHTML="<b>"+esc(String(i.desc).slice(0,80))+'</b><div class="meta"><span class="tg po">'+esc(i.po)+
+      '</span><span class="tg">'+esc(money(i.u))+"</span>"+esc(i.d)+" \u00b7 "+esc(i.sup)+"</div>";
+    d.append(b);
+    d.onclick=()=>{curPo={po:i.po,ln:i.ln,d:i.d,sup:i.sup,desc:i.desc,u:i.u,acct:i.acct};
+      el("picker").classList.remove("on");paintPo();
+      if(el("fRepl").value===""&&i.u!=null)el("fRepl").value=i.u;toast("Linked "+i.po)};
+    box.appendChild(d)})}
+
+const HEAD=["Dept #","Item ID","Item Name","Maker","Model","Category","Serial Number","UND Tag","Tag Status",
+ "Product Barcode","Building","Room","Location in Room","Qty Here","Qty Total","Replacement Cost (unit)",
+ "Replacement Value Here","Condition","Responsible Person","PO #","PO Line","PO Date","PO Supplier",
+ "PO Unit Price","Photo Files","Recorded On","Recorded By","Notes"];
+function photoNames(it){const o=[];if(it.photos){if(it.photos.item)o.push(it.id+".jpg");
+  if(it.photos.tag)o.push(it.id+"-tag.jpg");if(it.photos.serial)o.push(it.id+"-serial.jpg")}return o}
 function rows(){
   const out=[];
-  ITEMS.forEach(it=>{
-    const r=recs[keyOf(it)];
-    out.push(["Purchase",it.po,it.ln,it.d,it.sup,it.desc,it.mfr||"",it.cat||"",it.acct||"",
-      it.u==null?"":it.u,it.qty==null?"":it.qty,
-      r?r.status:"not reviewed","",r?r.name:"",r?r.tag:"",r?r.serial:"",r?r.building:"",r?r.room:"",
-      r?r.where:"",r&&r.qty!=null?r.qty:"",r?r.cond:"",r?r.owner:"",
-      r?photoNames(r).join("; "):"",r?r.date:"",r?r.by:"",r?r.notes:""])});
-  Object.values(recs).filter(r=>r.unk).sort((a,b)=>a.key<b.key?-1:1).forEach(r=>{
-    const m=r.matchPo?findItem(r.matchPo,r.matchLn):null;
-    out.push([r.matchPo?"Matched":"Unidentified",r.matchPo||"",r.matchLn||"",
-      m?m.d:"",m?m.sup:"",r.matchDesc||(m?m.desc:""),m?(m.mfr||""):"",m?(m.cat||""):"",m?(m.acct||""):"",
-      m&&m.u!=null?m.u:"",m&&m.qty!=null?m.qty:"",r.status,r.matchConf||"",r.name||"",r.tag,r.serial,
-      r.building,r.room,r.where,r.qty==null?"":r.qty,r.cond,r.owner,
-      photoNames(r).join("; "),r.date,r.by,r.notes])});
+  Object.values(items).sort((a,b)=>a.id<b.id?-1:1).forEach(it=>{
+    const tot=qtyOf(it),p=photoNames(it).join("; ");
+    const ls=(it.locs&&it.locs.length)?it.locs:[{building:"",room:"",where:"",qty:tot||1}];
+    ls.forEach(l=>{const q=Number(l.qty)||0,r=it.repl==null?"":it.repl;
+      out.push([dept,it.id,it.name,it.maker,it.model,it.cat,it.serial,it.tag,it.tagStatus,it.upc,
+        l.building,l.room,l.where,q,tot,r,r===""?"":+(r*q).toFixed(2),it.cond,it.owner,
+        it.po?it.po.po:"",it.po?it.po.ln:"",it.po?it.po.d:"",it.po?it.po.sup:"",
+        it.po&&it.po.u!=null?it.po.u:"",p,it.updated||it.created,it.by,it.notes])})});
   return out}
+function roomRows(){
+  const m={};
+  Object.values(items).forEach(it=>{(it.locs||[]).forEach(l=>{
+    const k=(l.building||"")+"|"+(l.room||"");
+    m[k]=m[k]||{b:l.building,r:l.room,lines:0,units:0,val:0};
+    m[k].lines++;m[k].units+=Number(l.qty)||0;
+    if(it.repl!=null)m[k].val+=it.repl*(Number(l.qty)||0)})});
+  return Object.values(m).sort((a,b)=>(a.b+a.r)<(b.b+b.r)?-1:1).map(v=>[v.b,v.r,v.lines,v.units,+v.val.toFixed(2)])}
+function flagRows(){return flagged().map(it=>[it.id,it.name,it.maker,it.model,it.serial,it.tagStatus,
+  it.repl==null?"":it.repl,it.po?it.po.po:"",(it.locs||[]).map(l=>l.room).join(", "),it.notes])}
 function dl(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 function stamp(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+
@@ -600,168 +637,177 @@ function stamp(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1
 function exportCsv(){
   const q=v=>{const s=String(v==null?"":v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
   dl(new Blob(["\uFEFF"+[HEAD,...rows()].map(r=>r.map(q).join(",")).join("\r\n")],
-    {type:"text/csv;charset=utf-8"}),"BME-inventory-"+stamp()+".csv");
-  toast("CSV saved to Downloads")}
+    {type:"text/csv;charset=utf-8"}),"BME-inventory-"+stamp()+".csv");toast("CSV saved to Downloads")}
 function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement("script");
   s.src=src;s.onload=ok;s.onerror=()=>no(new Error("offline"));document.head.appendChild(s)})}
 async function exportXlsx(){
   try{
     if(!window.XLSX)await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+    const wb=XLSX.utils.book_new();
     const ws=XLSX.utils.aoa_to_sheet([HEAD,...rows()]);
-    ws["!cols"]=[13,12,7,11,20,40,14,14,11,11,11,13,14,24,14,16,15,8,20,10,12,16,26,12,12,28].map(w=>({wch:w}));
+    ws["!cols"]=[9,10,32,16,16,20,20,14,11,15,15,8,22,9,9,17,19,12,18,12,7,11,20,12,26,12,14,32].map(w=>({wch:w}));
     ws["!freeze"]={xSplit:0,ySplit:1};
     ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:0,c:HEAD.length-1}})};
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Inventory");
+    XLSX.utils.book_append_sheet(wb,ws,"Inventory");
+    const rs=XLSX.utils.aoa_to_sheet([["Building","Room","Item lines","Units","Replacement value"],...roomRows()]);
+    rs["!cols"]=[18,10,12,10,20].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,rs,"By Room");
+    const fs=XLSX.utils.aoa_to_sheet([["Item ID","Name","Maker","Model","Serial","Tag Status",
+      "Replacement Cost","PO #","Rooms","Notes"],...flagRows()]);
+    fs["!cols"]=[10,32,16,16,20,11,17,12,14,32].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,fs,"Needs a tag");
     dl(new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],
       {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"BME-inventory-"+stamp()+".xlsx");
     toast("Spreadsheet saved to Downloads")
   }catch(e){toast("No connection for xlsx — saving CSV");exportCsv()}}
 async function exportPhotos(){
   const jobs=[];
-  Object.values(recs).forEach(r=>{const n=photoNames(r);let i=0;
-    if(r.photos){if(r.photos.item)jobs.push([r.photos.item,n[i++]]);
-      if(r.photos.tag)jobs.push([r.photos.tag,n[i++]]);
-      if(r.photos.serial)jobs.push([r.photos.serial,n[i++]])}});
+  Object.values(items).forEach(it=>{if(!it.photos)return;
+    if(it.photos.item)jobs.push([it.photos.item,it.id+".jpg"]);
+    if(it.photos.tag)jobs.push([it.photos.tag,it.id+"-tag.jpg"]);
+    if(it.photos.serial)jobs.push([it.photos.serial,it.id+"-serial.jpg"])});
   if(!jobs.length){toast("No photos stored yet.");return}
   toast("Saving "+jobs.length+" photos — allow multiple downloads");
   for(const[b,n]of jobs){dl(b,n);await new Promise(r=>setTimeout(r,350))}}
-
-async function exportMatchRequest(){
-  const list=Object.values(recs).filter(r=>r.unk&&!r.matchPo);
-  if(!list.length){toast("No unidentified items.");return}
-  const jobs=[],man=[];
-  list.forEach(r=>{
-    const b=baseName(r),files=[];
-    if(r.photos){
-      if(r.photos.item){jobs.push([r.photos.item,b+".jpg"]);files.push(b+".jpg")}
-      if(r.photos.tag){jobs.push([r.photos.tag,b+"-tag.jpg"]);files.push(b+"-tag.jpg")}
-      if(r.photos.serial){jobs.push([r.photos.serial,b+"-serial.jpg"]);files.push(b+"-serial.jpg")}}
-    man.push({id:r.key,ref:b,photos:files,room:r.room||"",building:r.building||"",
-      where:r.where||"",tag:r.tag||"",serial:r.serial||"",guess:r.name||"",notes:r.notes||""})});
-  dl(new Blob([JSON.stringify({v:1,generated:new Date().toISOString().slice(0,10),items:man},null,1)],
-    {type:"application/json"}),"match-request-"+stamp()+".json");
-  toast("Saving manifest + "+jobs.length+" photos");
+async function exportIdReq(){
+  const un=pending();
+  if(!un.length){toast("Nothing waiting to be identified.");return}
+  const man=un.map(i=>({id:i.id,photos:photoNames(i),
+    guess:i.name||"",maker:i.maker||"",model:i.model||"",
+    rooms:(i.locs||[]).map(l=>l.room),qty:qtyOf(i),
+    tag:i.tag||"",serial:i.serial||"",notes:i.notes||""}));
+  dl(new Blob([JSON.stringify({v:2,generated:new Date().toISOString().slice(0,10),items:man},null,1)],
+    {type:"application/json"}),"id-request-"+stamp()+".json");
+  toast("Manifest saved. Now saving photos\u2026");
+  const jobs=[];un.forEach(it=>{if(it.photos.item)jobs.push([it.photos.item,it.id+".jpg"]);
+    if(it.photos.tag)jobs.push([it.photos.tag,it.id+"-tag.jpg"]);
+    if(it.photos.serial)jobs.push([it.photos.serial,it.id+"-serial.jpg"])});
   for(const[b,n]of jobs){await new Promise(r=>setTimeout(r,350));dl(b,n)}}
 
-async function importMatches(file){
+async function importIds(file){
   try{
     const d=JSON.parse(await file.text());
-    const arr=Array.isArray(d)?d:(d.matches||d.items||[]);
+    const arr=Array.isArray(d)?d:(d.items||d.matches||[]);
     if(!Array.isArray(arr))throw new Error("bad");
-    let n=0,miss=0;
+    let n=0,miss=[];
     for(const m of arr){
-      const r=recs[m.id];
-      if(!r){miss++;continue}
-      if(m.name)r.name=m.name;
-      if(m.po){r.matchPo=String(m.po);r.matchLn=String(m.line==null?m.ln:m.line);
-        const it=findItem(r.matchPo,r.matchLn);
-        r.matchDesc=m.description||(it?it.desc:"");
-        r.matchConf=m.confidence||"";}
-      else if(m.no_match){r.matchPo=null;r.matchConf="no purchase record";}
-      if(m.notes)r.notes=(r.notes?r.notes+" | ":"")+m.notes;
-      await put(r);recs[r.key]=r;n++}
+      const it=items[m.id];
+      if(!it){miss.push(m.id);continue}
+      if(m.name)it.name=m.name;
+      if(m.maker)it.maker=m.maker;
+      if(m.model)it.model=m.model;
+      if(m.category)it.cat=m.category;
+      if(m.serial&&!it.serial)it.serial=m.serial;
+      if(m.replacement!=null&&it.repl==null)it.repl=Number(m.replacement);
+      if(m.po){
+        const c=findCat(String(m.po),String(m.line==null?m.ln:m.line));
+        it.po=c?{po:c.po,ln:c.ln,d:c.d,sup:c.sup,desc:c.desc,u:c.u,acct:c.acct}
+               :{po:String(m.po),ln:String(m.line||""),d:"",sup:"",desc:m.description||"",u:null};
+      }
+      if(m.notes)it.notes=(it.notes?it.notes+" | ":"")+m.notes;
+      it.ask=false;it.updated=new Date().toISOString().slice(0,10);
+      await put(it);items[it.id]=it;n++}
     renderAll();
-    toast("Applied "+n+" matches"+(miss?", "+miss+" ids not found":""))
+    toast("Applied "+n+(miss.length?", "+miss.length+" ids not found":""))
   }catch(e){toast("That file could not be read.")}}
 
 function b2d(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)})}
 async function backup(){
-  const list=Object.values(recs);
+  const list=Object.values(items);
   if(!list.length){toast("Nothing to back up yet.");return}
   toast("Building backup\u2026");
   const out=[];
-  for(const r of list){const c=Object.assign({},r);c.photos={};
-    for(const s of["item","tag","serial"])if(r.photos&&r.photos[s])c.photos[s]=await b2d(r.photos[s]);
+  for(const it of list){const c=Object.assign({},it);c.photos={};
+    for(const s of["item","tag","serial"])if(it.photos&&it.photos[s])c.photos[s]=await b2d(it.photos[s]);
     out.push(c)}
-  dl(new Blob([JSON.stringify({v:3,ctx,who,recs:out})],{type:"application/json"}),"BME-backup-"+stamp()+".json");
+  dl(new Blob([JSON.stringify({v:4,ctx,who,dept,items:out})],{type:"application/json"}),"BME-backup-"+stamp()+".json");
   toast("Backup saved to Downloads")}
 async function d2b(u){return(await fetch(u)).blob()}
 async function restore(file){
   try{
     const d=JSON.parse(await file.text());
-    if(!d||!Array.isArray(d.recs))throw new Error("bad");
+    const src=d.items||d.recs;
+    if(!Array.isArray(src))throw new Error("bad");
     let n=0;
-    for(const r of d.recs){const c=Object.assign({},r),p={};
-      for(const s of["item","tag","serial"])if(r.photos&&r.photos[s])p[s]=await d2b(r.photos[s]);
-      c.photos=p;await put(c);recs[c.key]=c;n++}
-    if(d.ctx&&d.ctx.room){ctx=d.ctx;mSet("ctx",ctx)}
-    if(d.who){who=d.who;mSet("who",who)}
-    renderAll();toast("Restored "+n+" records")
+    for(const it of src){
+      const c=Object.assign({},it),p={};
+      for(const s of["item","tag","serial"])if(it.photos&&it.photos[s]){
+        const v=it.photos[s];p[s]=(typeof v==="string")?await d2b(v):v}
+      c.photos=p;
+      if(!c.id)c.id=nextId();
+      await put(c);items[c.id]=c;n++}
+    if(d.ctx)ctx=d.ctx;if(d.who)who=d.who;if(d.dept){dept=d.dept;mSet("dept",dept)}
+    mSet("ctx",ctx);renderAll();toast("Restored "+n+" items")
   }catch(e){toast("That file could not be read.")}}
-
-/* ================= catalog ================= */
 async function loadCatalog(file){
   try{
     const d=JSON.parse(await file.text());
-    const items=Array.isArray(d)?d:(d.items||[]);
-    if(!Array.isArray(items)||!items.length)throw new Error("empty");
-    if(!("po" in items[0])||!("desc" in items[0]))throw new Error("shape");
-    ITEMS=items;CATMETA=d.generated||"unknown date";
-    await mSet("catalog",{generated:CATMETA,items});
-    el("gate").style.display="none";el("app").style.display="";
-    renderAll();toast("Loaded "+ITEMS.length+" purchase lines")
+    const list=Array.isArray(d)?d:(d.items||[]);
+    if(!list.length||!("po"in list[0]))throw new Error("shape");
+    CAT=list;CATMETA=d.generated||"";await mSet("catalog",{generated:CATMETA,items:list});
+    renderTop();toast("Loaded "+CAT.length+" purchase lines")
   }catch(e){toast("That doesn't look like a catalog file.")}}
 
-/* ================= wiring ================= */
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".pane").forEach(n=>n.classList.toggle("on",n.id==="p-"+b.dataset.p));
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",String(x===b)))});
-document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>{
-  filter=b.dataset.f;
-  document.querySelectorAll("#chips button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
-  renderPO()});
-el("q").addEventListener("input",renderPO);
-el("shClose").onclick=closeSheet;
-el("btnSkip").onclick=closeSheet;
-el("btnSave").onclick=saveSheet;
-el("shScan").onclick=startScan;
+el("q").addEventListener("input",renderItems);
+el("btnNew").onclick=()=>openItem(null);
+el("btnScanFind").onclick=()=>startScan("find","Scan a product barcode or UND tag");
+el("btnScanTag").onclick=()=>startScan("tag","Scan the UND asset tag");
+el("btnScanUpc").onclick=()=>startScan("upc","Scan the barcode on the box");
 el("scanClose").onclick=stopScan;
-document.querySelectorAll(".status4 button").forEach(b=>b.onclick=()=>setStatusUI(b.dataset.s));
+el("shClose").onclick=closeSheet;el("btnCancel").onclick=closeSheet;el("btnSave").onclick=saveItem;
+el("btnAddLoc").onclick=addLoc;
+el("fName").addEventListener("input",showDupes);
+el("fSerial").addEventListener("input",checkUnique);
+el("fTag").addEventListener("input",checkUnique);
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>setTag(b.dataset.t));
 document.querySelectorAll(".shot").forEach(box=>{
   const slot=box.dataset.slot;
   box.querySelector("input").addEventListener("change",async e=>{
     const f=e.target.files&&e.target.files[0];e.target.value="";
     if(!f)return;
     try{shots[slot]=await shrink(f,1600);paintShot(slot)}catch(err){toast("Could not read that photo.")}})});
+el("btnLinkPo").onclick=()=>{el("pkQ").value=el("fName").value.trim();el("picker").classList.add("on");renderPk()};
+el("pkClose").onclick=()=>el("picker").classList.remove("on");
+el("pkQ").addEventListener("input",renderPk);
+el("btnUnlinkPo").onclick=()=>{curPo=null;paintPo()};
+el("btnDelItem").onclick=async()=>{
+  if(!cur||!items[cur.id])return;
+  if(!confirm("Delete "+cur.id+" and its photos?"))return;
+  await del(cur.id);delete items[cur.id];closeSheet();renderAll();toast("Deleted")};
 el("btnRoom").onclick=()=>{
   const b=prompt("Building",ctx.building||"Columbia Hall");if(b===null)return;
-  const r=prompt("Room number",ctx.room||"");if(r===null)return;
+  const r=prompt("Room",ctx.room||"");if(r===null)return;
   ctx.building=b.trim();ctx.room=r.trim();mSet("ctx",ctx);renderTop()};
-el("btnAddUnk").onclick=()=>openSheet(null,"u:"+Date.now().toString(36));
-el("btnXlsx").onclick=exportXlsx;
-el("btnCsv").onclick=exportCsv;
-el("btnPhotos").onclick=exportPhotos;
-el("btnMatchReq").onclick=exportMatchRequest;
-el("btnMatchIn").onclick=()=>el("matchFile").click();
-el("matchFile").onchange=e=>{if(e.target.files[0])importMatches(e.target.files[0]);e.target.value=""};
+el("btnDept").onclick=()=>{const d=prompt("Department number",dept||"");if(d===null)return;
+  dept=d.trim();mSet("dept",dept);renderTop();toast("Department set")};
+el("btnXlsx").onclick=exportXlsx;el("btnCsv").onclick=exportCsv;
+el("btnPhotos").onclick=exportPhotos;el("btnIdReq").onclick=exportIdReq;
+el("btnIdIn").onclick=()=>el("idFile").click();
+el("idFile").onchange=e=>{if(e.target.files[0])importIds(e.target.files[0]);e.target.value=""};
 el("btnBackup").onclick=backup;
 el("btnRestore").onclick=()=>el("restoreFile").click();
 el("restoreFile").onchange=e=>{if(e.target.files[0])restore(e.target.files[0]);e.target.value=""};
-el("btnCatalog").onclick=()=>el("gateFile").click();
-el("gatePick").onclick=()=>el("gateFile").click();
-el("gateFile").onchange=e=>{if(e.target.files[0])loadCatalog(e.target.files[0]);e.target.value=""};
-el("gateSkip").onclick=()=>{el("gate").style.display="none";el("app").style.display="";renderAll()};
+el("btnCatalog").onclick=()=>el("catFile").click();
+el("catFile").onchange=e=>{if(e.target.files[0])loadCatalog(e.target.files[0]);e.target.value=""};
 el("btnWipe").onclick=async()=>{
-  const n=Object.keys(recs).length;
-  if(!confirm("Erase all "+n+" records and photos from this phone? Export first if you have not."))return;
+  const n=Object.keys(items).length;
+  if(!confirm("Erase all "+n+" items and photos from this phone? Export first if you have not."))return;
   if(!confirm("Last check \u2014 this cannot be undone."))return;
-  await wipe();recs={};renderAll();toast("Erased")};
+  await wipe();items={};renderAll();toast("Erased")};
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&scanning)stopScan()});
 
 (async function init(){
   db=await openDB();
   if(useMem)toast("Storage blocked here \u2014 open over https on your phone.");
-  (await all()).forEach(r=>recs[r.key]=r);
+  (await all()).forEach(i=>items[i.id]=i);
   const c=await mGet("ctx");if(c)ctx=c;
-  who=(await mGet("who"))||"";
-  const cat=await mGet("catalog");
-  if(cat&&cat.items&&cat.items.length){ITEMS=cat.items;CATMETA=cat.generated;
-    el("app").style.display="";}
-  else el("gate").style.display="";
-  if(ITEMS.length&&!who){const w=prompt("Your name \u2014 goes in the Reviewed By column","");
-    if(w){who=w.trim();mSet("who",who)}}
-  renderAll();
-})();
+  who=(await mGet("who"))||"";dept=(await mGet("dept"))||"";
+  const cat=await mGet("catalog");if(cat&&cat.items){CAT=cat.items;CATMETA=cat.generated}
+  if(!who){const w=prompt("Your name \u2014 goes in the Recorded By column","");if(w){who=w.trim();mSet("who",who)}}
+  renderAll()})();
 </script>
 </body>
 </html>
