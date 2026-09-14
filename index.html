@@ -319,7 +319,9 @@
             <option>Under repair</option><option>Surplus candidate</option></select></label>
         <label><span>Responsible person</span><input type="text" id="fOwner" autocomplete="off"></label>
       </div>
-      <label style="margin:0"><span>Notes</span><textarea id="fNotes"></textarea></label>
+      <label><span>Notes</span><textarea id="fNotes"></textarea></label>
+      <label style="margin:0"><span>What's inside / contents</span>
+        <textarea id="fContents" style="min-height:80px" placeholder="Every value, size and part a student might search for"></textarea></label>
     </div>
 
     <div class="card">
@@ -457,7 +459,8 @@ function rowFor(it){
 function renderItems(){
   const q=norm(el("q").value);
   const list=Object.values(items).sort((a,b)=>a.id<b.id?1:-1).filter(it=>!q||
-    norm([it.name,it.maker,it.model,it.id,it.serial,it.tag,it.upc,it.cat,it.po?it.po.desc:""].join(" ")).includes(q));
+    norm([it.name,it.maker,it.model,it.id,it.serial,it.tag,it.upc,it.cat,it.contents,it.notes,
+      it.po?it.po.desc:""].join(" ")).includes(q));
   const box=el("itemList");
   if(!list.length){box.innerHTML=Object.keys(items).length
     ?'<div class="empty"><b>Nothing matches</b>Record it as new if it isn\u2019t here.</div>'
@@ -555,6 +558,7 @@ function openItem(it){
   el("fUpc").value=it?it.upc||"":"";el("fRepl").value=it&&it.repl!=null?it.repl:"";
   el("fCond").value=it?it.cond||"In use":"In use";el("fOwner").value=it?it.owner||"":"";
   el("fNotes").value=it?it.notes||"":"";
+  el("fContents").value=it?it.contents||"":"";
   el("fAsk").checked=it?!!it.ask:false;
   setTag(it?it.tagStatus||"none":"none");
   locs=it?JSON.parse(JSON.stringify(it.locs||[])):(ctx.room?[{building:ctx.building,room:ctx.room,where:"",qty:1}]:[]);
@@ -576,7 +580,7 @@ async function saveItem(){
     cat:el("fCat").value,tag:el("fTag").value.trim(),tagStatus,ask:el("fAsk").checked,
     serial:el("fSerial").value.trim(),upc:el("fUpc").value.trim(),
     repl:el("fRepl").value===""?null:Number(el("fRepl").value),
-    cond:el("fCond").value,owner:el("fOwner").value.trim(),notes:el("fNotes").value.trim(),
+    cond:el("fCond").value,owner:el("fOwner").value.trim(),notes:el("fNotes").value.trim(),contents:el("fContents").value.trim(),
     locs:locs.filter(l=>Number(l.qty)>0),po:curPo,
     photos:{item:shots.item,tag:shots.tag,serial:shots.serial},
     created:prev.created||new Date().toISOString().slice(0,10),
@@ -606,7 +610,7 @@ function renderPk(){
 const HEAD=["Dept #","Item ID","Item Name","Maker","Model","Category","Serial Number","UND Tag","Tag Status",
  "Product Barcode","Building","Room","Location in Room","Qty Here","Qty Total","Replacement Cost (unit)",
  "Replacement Value Here","Condition","Responsible Person","PO #","PO Line","PO Date","PO Supplier",
- "PO Unit Price","Photo Files","Recorded On","Recorded By","Notes"];
+ "PO Unit Price","Photo Files","Recorded On","Recorded By","Notes","Contents"];
 function photoNames(it){const o=[];if(it.photos){if(it.photos.item)o.push(it.id+".jpg");
   if(it.photos.tag)o.push(it.id+"-tag.jpg");if(it.photos.serial)o.push(it.id+"-serial.jpg")}return o}
 function rows(){
@@ -618,7 +622,7 @@ function rows(){
       out.push([dept,it.id,it.name,it.maker,it.model,it.cat,it.serial,it.tag,it.tagStatus,it.upc,
         l.building,l.room,l.where,q,tot,r,r===""?"":+(r*q).toFixed(2),it.cond,it.owner,
         it.po?it.po.po:"",it.po?it.po.ln:"",it.po?it.po.d:"",it.po?it.po.sup:"",
-        it.po&&it.po.u!=null?it.po.u:"",p,it.updated||it.created,it.by,it.notes])})});
+        it.po&&it.po.u!=null?it.po.u:"",p,it.updated||it.created,it.by,it.notes,it.contents||""])})});
   return out}
 function roomRows(){
   const m={};
@@ -645,7 +649,7 @@ async function exportXlsx(){
     if(!window.XLSX)await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
     const wb=XLSX.utils.book_new();
     const ws=XLSX.utils.aoa_to_sheet([HEAD,...rows()]);
-    ws["!cols"]=[9,10,32,16,16,20,20,14,11,15,15,8,22,9,9,17,19,12,18,12,7,11,20,12,26,12,14,32].map(w=>({wch:w}));
+    ws["!cols"]=[9,10,32,16,16,20,20,14,11,15,15,8,22,9,9,17,19,12,18,12,7,11,20,12,26,12,14,32,60].map(w=>({wch:w}));
     ws["!freeze"]={xSplit:0,ySplit:1};
     ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:0,c:HEAD.length-1}})};
     XLSX.utils.book_append_sheet(wb,ws,"Inventory");
@@ -704,6 +708,7 @@ async function importIds(file){
         it.po=c?{po:c.po,ln:c.ln,d:c.d,sup:c.sup,desc:c.desc,u:c.u,acct:c.acct}
                :{po:String(m.po),ln:String(m.line||""),d:"",sup:"",desc:m.description||"",u:null};
       }
+      if(m.contents)it.contents=m.contents;
       if(m.notes)it.notes=(it.notes?it.notes+" | ":"")+m.notes;
       it.ask=false;it.updated=new Date().toISOString().slice(0,10);
       await put(it);items[it.id]=it;n++}
