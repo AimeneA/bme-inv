@@ -221,10 +221,15 @@
   </div>
   <div class="card">
     <h2>Ask me to identify things</h2>
-    <p class="note"><strong id="askN">0 waiting</strong>. Exports their photos plus an <strong>id-request.json</strong> manifest. Send both in a chat, then import the answer here.</p>
-    <button class="btn primary" id="btnIdReq">Export ID request</button>
+    <p class="note"><strong id="askN">0 waiting</strong>. Every new item is queued here automatically. The export is <strong>one Excel file</strong> with each item's details and photos inside &mdash; send just that file in a chat, then import the answer here.</p>
+    <button class="btn primary" id="btnIdReq">Export for Claude (one Excel file)</button>
     <button class="btn" id="btnIdIn">Import identifications</button>
     <input type="file" id="idFile" accept=".json,application/json" hidden>
+  </div>
+  <div class="card" id="junkCard" style="display:none">
+    <h2>Clean up</h2>
+    <p class="note"><strong id="junkN"></strong> These are lines from the purchase list, not things in the room &mdash; no name, photo or location. They got in when catalog.json was opened with Restore, and they would show up as blank rows in the spreadsheet.</p>
+    <button class="btn danger" id="btnJunk">Save a backup, then remove them</button>
   </div>
   <div class="card">
     <h2>Setup</h2>
@@ -233,6 +238,7 @@
     <button class="btn" id="btnCatalog">Load purchase list (catalog.json)</button>
     <button class="btn danger" id="btnWipe">Erase everything</button>
     <input type="file" id="catFile" accept=".json,application/json" hidden>
+    <p class="note" style="margin:10px 0 0;font-size:12px">App version 2026-09-18</p>
   </div>
 </section>
 
@@ -246,7 +252,7 @@
       <label><span>Name</span><input type="text" id="fName" autocomplete="off" placeholder="Leave blank if unsure — photograph it and ask later"></label>
       <label style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <input type="checkbox" id="fAsk" style="width:22px;height:22px;flex:0 0 auto;margin:0">
-        <span style="margin:0;font-size:14px;color:var(--ink)">Send this one to Claude to identify</span>
+        <span style="margin:0;font-size:14px;color:var(--ink)">Send this one to Claude to identify <span style="color:var(--ink-3)">(on for every new item)</span></span>
       </label>
       <div class="two" style="margin-bottom:12px">
         <label><span>Maker</span><input type="text" id="fMaker" autocomplete="off"></label>
@@ -393,6 +399,10 @@ function qtyOf(it){return (it.locs||[]).reduce((a,l)=>a+(Number(l.qty)||0),0)}
 function isUnique(it){return !!((it.serial&&String(it.serial).trim())||(it.tag&&String(it.tag).trim()))}
 function nextId(){let mx=0;Object.keys(items).forEach(k=>{const m=/^BME-(\d+)$/.exec(k);if(m)mx=Math.max(mx,+m[1])});
   return "BME-"+String(mx+1).padStart(3,"0")}
+function today(){return new Date().toISOString().slice(0,10)}
+/* Lines copied from the purchase list into the item store: no name, no location, no photo. */
+function isCatLine(it){return !it.name&&typeof it.po==="string"&&("desc" in it)&&!(it.locs&&it.locs.length)&&!thumbOf(it)}
+function real(){return Object.values(items).filter(i=>!isCatLine(i))}
 function findCat(po,ln){return CAT.find(x=>x.po===po&&String(x.ln)===String(ln))||null}
 
 function shrink(file,max){return new Promise((res,rej)=>{
@@ -438,8 +448,8 @@ function thumbOf(it){return it.photos&&(it.photos.item||it.photos.tag||it.photos
 function needsTag(it){
   const v=Math.max(Number(it.repl)||0,(it.po&&it.po.u)?Number(it.po.u):0);
   return it.tagStatus!=="major"&&v>=5000}
-function flagged(){return Object.values(items).filter(needsTag)}
-function pending(){return Object.values(items).filter(i=>(!i.name||i.ask)&&thumbOf(i))}
+function flagged(){return real().filter(needsTag)}
+function pending(){return real().filter(i=>i.ask||(!i.name&&thumbOf(i)))}
 function rowFor(it){
   const row=document.createElement("div");
   row.className="row "+(needsTag(it)?"flagged":(it.tagStatus==="major"?"major":(it.name?"plain":"dim")));
@@ -458,7 +468,7 @@ function rowFor(it){
   row.append(img,b,q);row.onclick=()=>openItem(it);return row}
 function renderItems(){
   const q=norm(el("q").value);
-  const list=Object.values(items).sort((a,b)=>a.id<b.id?1:-1).filter(it=>!q||
+  const list=real().sort((a,b)=>a.id<b.id?1:-1).filter(it=>!q||
     norm([it.name,it.maker,it.model,it.id,it.serial,it.tag,it.upc,it.cat,it.contents,it.notes,
       it.po?it.po.desc:""].join(" ")).includes(q));
   const box=el("itemList");
@@ -474,14 +484,16 @@ function renderFlags(){
 function renderTop(){
   el("tRoom").textContent=ctx.room?("Room "+ctx.room):"No room set";
   el("tBldg").textContent=ctx.building||"Tap Change to set where you are";
-  el("tProg").textContent=Object.keys(items).length;
+  el("tProg").textContent=real().length;
   let np=0;Object.values(items).forEach(i=>{if(i.photos)["item","tag","serial"].forEach(s=>{if(i.photos[s])np++})});
   el("photoN").textContent=np+(np===1?" photo":" photos");
-  const units=Object.values(items).reduce((a,i)=>a+qtyOf(i),0);
-  el("statLine").textContent=Object.keys(items).length+" item types, "+units+" units"+
+  const units=real().reduce((a,i)=>a+qtyOf(i),0);
+  el("statLine").textContent=real().length+" item types, "+units+" units"+
     (dept?", dept "+dept:", no department number set")+".";
   el("catLine").textContent=CAT.length?("Purchase list: "+CAT.length+" lines."):"No purchase list loaded.";
-  const p=pending().length;el("askN").textContent=p+(p===1?" item waiting":" items waiting")}
+  const p=pending().length;el("askN").textContent=p+(p===1?" item waiting":" items waiting");
+  const j=Object.values(items).filter(isCatLine).length;
+  el("junkCard").style.display=j?"":"none";el("junkN").textContent=j+(j===1?" record needs":" records need")+" removing."}
 function renderAll(){renderTop();renderItems();renderFlags()}
 
 function renderLocs(){
@@ -559,7 +571,7 @@ function openItem(it){
   el("fCond").value=it?it.cond||"In use":"In use";el("fOwner").value=it?it.owner||"":"";
   el("fNotes").value=it?it.notes||"":"";
   el("fContents").value=it?it.contents||"":"";
-  el("fAsk").checked=it?!!it.ask:false;
+  el("fAsk").checked=it?!!it.ask:true;
   setTag(it?it.tagStatus||"none":"none");
   locs=it?JSON.parse(JSON.stringify(it.locs||[])):(ctx.room?[{building:ctx.building,room:ctx.room,where:"",qty:1}]:[]);
   curPo=it&&it.po?Object.assign({},it.po):null;
@@ -588,7 +600,8 @@ async function saveItem(){
   try{await put(it)}catch(e){toast("Could not save. Storage may be full — export now.");return}
   items[it.id]=it;
   if(it.locs.length){ctx.building=it.locs[0].building;ctx.room=it.locs[0].room;mSet("ctx",ctx)}
-  closeSheet();renderAll();toast(cur.existing?it.id+" updated":it.id+" saved")}
+  const was=cur.existing;closeSheet();renderAll();
+  toast(was?it.id+" updated":(it.ask?it.id+" saved \u2014 queued for Claude":it.id+" saved"))}
 
 function renderPk(){
   const q=norm(el("pkQ").value),box=el("pkList");
@@ -615,7 +628,7 @@ function photoNames(it){const o=[];if(it.photos){if(it.photos.item)o.push(it.id+
   if(it.photos.tag)o.push(it.id+"-tag.jpg");if(it.photos.serial)o.push(it.id+"-serial.jpg")}return o}
 function rows(){
   const out=[];
-  Object.values(items).sort((a,b)=>a.id<b.id?-1:1).forEach(it=>{
+  real().sort((a,b)=>a.id<b.id?-1:1).forEach(it=>{
     const tot=qtyOf(it),p=photoNames(it).join("; ");
     const ls=(it.locs&&it.locs.length)?it.locs:[{building:"",room:"",where:"",qty:tot||1}];
     ls.forEach(l=>{const q=Number(l.qty)||0,r=it.repl==null?"":it.repl;
@@ -626,7 +639,7 @@ function rows(){
   return out}
 function roomRows(){
   const m={};
-  Object.values(items).forEach(it=>{(it.locs||[]).forEach(l=>{
+  real().forEach(it=>{(it.locs||[]).forEach(l=>{
     const k=(l.building||"")+"|"+(l.room||"");
     m[k]=m[k]||{b:l.building,r:l.room,lines:0,units:0,val:0};
     m[k].lines++;m[k].units+=Number(l.qty)||0;
@@ -673,6 +686,78 @@ async function exportPhotos(){
   if(!jobs.length){toast("No photos stored yet.");return}
   toast("Saving "+jobs.length+" photos — allow multiple downloads");
   for(const[b,n]of jobs){dl(b,n);await new Promise(r=>setTimeout(r,350))}}
+const XLJS=["https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"];
+async function ensureExcelJS(){if(window.ExcelJS)return;
+  for(const u of XLJS){try{await loadScript(u);if(window.ExcelJS)return}catch(e){}}throw new Error("offline")}
+function imgSize(blob){return new Promise(res=>{const u=URL.createObjectURL(blob),i=new Image();
+  i.onload=()=>{res({w:i.naturalWidth||4,h:i.naturalHeight||3});URL.revokeObjectURL(u)};
+  i.onerror=()=>{res({w:4,h:3});URL.revokeObjectURL(u)};i.src=u})}
+const SLOTS=[["item","Item photo"],["serial","Label / serial photo"],["tag","UND tag photo"]];
+const PART_LIMIT=24*1024*1024; /* keeps each file under the chat upload limit */
+async function buildClaudeBook(list,part,of){
+  const wb=new ExcelJS.Workbook();wb.creator=who||"BME Inventory";wb.created=new Date();
+  const ws=wb.addWorksheet("For Claude",{views:[{state:"frozen",ySplit:1}]});
+  const cols=[["Item ID",10],["Name or guess",26],["Item photo",34],["Label / serial photo",34],["UND tag photo",34],
+    ["Maker",16],["Model",16],["Category",18],["Building",14],["Room",8],
+    ["Where in room",14],["Qty",6],["Product barcode",18],["UND tag",14],["Serial",16],
+    ["Notes",40],["Contents",40],["Recorded",11],["By",14]];
+  ws.columns=cols.map(([h,w])=>({header:h,width:w}));
+  const hr=ws.getRow(1);hr.height=22;
+  hr.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};
+    c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF0F1720"}};c.alignment={vertical:"middle"}});
+  let r=2;
+  for(const it of list){
+    const l=(it.locs&&it.locs[0])||{};
+    const row=ws.addRow([it.id,it.name||"","","","",it.maker||"",it.model||"",it.cat||"",
+      l.building||"",l.room||"",(it.locs||[]).map(x=>x.where).filter(Boolean).join("; "),qtyOf(it),
+      it.upc||"",it.tag||"",it.serial||"",it.notes||"",it.contents||"",it.updated||it.created||"",it.by||""]);
+    row.height=150;row.eachCell({includeEmpty:true},c=>{c.alignment={vertical:"top",wrapText:true}});
+    row.getCell(1).font={bold:true};row.getCell(2).font={bold:true};
+    for(let k=0;k<SLOTS.length;k++){
+      const b=it.photos&&it.photos[SLOTS[k][0]];if(!b)continue;
+      const d=await imgSize(b),sc=Math.min(236/d.w,192/d.h);
+      const id=wb.addImage({base64:await b2d(b),extension:/png/i.test(b.type||"")?"png":"jpeg"});
+      ws.addImage(id,{tl:{col:2+k+0.03,row:r-1+0.03},ext:{width:Math.round(d.w*sc),height:Math.round(d.h*sc)},editAs:"oneCell"})}
+    r++}
+  const info=wb.addWorksheet("Read me");
+  info.columns=[{width:18},{width:100}];
+  [["What this is","Items waiting to be identified, exported from the BME inventory app. Photos are stored full size inside the file."],
+   ["Items",String(list.length)+(of>1?"  (part "+part+" of "+of+")":"")],
+   ["Exported",new Date().toISOString().slice(0,16).replace("T"," ")],
+   ["By",who||""],
+   ["Purchase list",CAT.length?(CAT.length+" lines on the Purchase list tab, for matching (no buyer names or account codes)."):"Not loaded on this phone - no PO matching possible."],
+   ["Answer","identifications.json: [{id, name, maker, model, category, serial, replacement, po, line, contents, notes}]. Only id is required."]
+  ].forEach(x=>info.addRow(x));
+  info.getColumn(1).font={bold:true};
+  if(CAT.length){ /* purchase list for matching - without buyer names or account codes */
+    const pl=wb.addWorksheet("Purchase list",{views:[{state:"frozen",ySplit:1}]});
+    pl.columns=[["PO",12],["Line",6],["Date",11],["Supplier",24],["Description",80],["Maker",16],
+      ["Catalog #",16],["Qty",6],["Unit price",11],["Room",8]].map(([h,w])=>({header:h,width:w}));
+    pl.getRow(1).font={bold:true};
+    CAT.forEach(c=>pl.addRow([c.po,String(c.ln),c.d||"",c.sup||"",c.desc||"",c.mfr||"",c.cat||"",c.qty,c.u,c.rm||""]))}
+  return wb.xlsx.writeBuffer()}
+async function exportForClaude(){
+  const un=pending().sort((a,b)=>a.id<b.id?-1:1);
+  if(!un.length){toast("Nothing waiting to be identified.");return}
+  try{await ensureExcelJS()}catch(e){toast("No connection for Excel \u2014 saving the old photos + manifest instead");return exportIdReq()}
+  toast("Building the file\u2026");
+  const parts=[];let part=[],bytes=0;
+  for(const it of un){
+    const b=SLOTS.reduce((a,[s])=>a+((it.photos&&it.photos[s])?(it.photos[s].size||0):0),0);
+    if(part.length&&bytes+b>PART_LIMIT){parts.push(part);part=[];bytes=0}
+    part.push(it);bytes+=b}
+  if(part.length)parts.push(part);
+  const st=stamp();
+  try{
+    for(let p=0;p<parts.length;p++){
+      const buf=await buildClaudeBook(parts[p],p+1,parts.length);
+      dl(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),
+        "BME-for-Claude-"+st+(parts.length>1?"-part"+(p+1)+"of"+parts.length:"")+".xlsx");
+      if(p<parts.length-1)await new Promise(r=>setTimeout(r,900))}
+  }catch(e){toast("Could not build the Excel file \u2014 saving the old photos + manifest instead");return exportIdReq()}
+  toast(parts.length>1?("Too many photos for one file \u2014 saved "+parts.length+" files, send them all")
+                      :("Saved one file with "+un.length+(un.length===1?" item":" items")+" \u2014 send it to Claude"))}
 async function exportIdReq(){
   const un=pending();
   if(!un.length){toast("Nothing waiting to be identified.");return}
@@ -693,27 +778,43 @@ async function importIds(file){
     const d=JSON.parse(await file.text());
     const arr=Array.isArray(d)?d:(d.items||d.matches||[]);
     if(!Array.isArray(arr))throw new Error("bad");
-    let n=0,miss=[];
+    let n=0,made=0,miss=[],multi=0;
     for(const m of arr){
-      const it=items[m.id];
-      if(!it){miss.push(m.id);continue}
+      if(!m||!m.id)continue;
+      let it=items[m.id];
+      if(!it){
+        if(!m.create){miss.push(m.id);continue}
+        it={id:m.id,name:"",maker:"",model:"",cat:"",tag:"",tagStatus:"none",ask:false,serial:"",upc:"",repl:null,
+          cond:"In use",owner:"",notes:"",contents:"",
+          locs:[{building:m.building||ctx.building||"Columbia Hall",room:m.room||ctx.room||"",where:m.where||"",
+                 qty:m.qty!=null?Number(m.qty):1}],
+          po:null,photos:{item:null,tag:null,serial:null},created:today(),updated:today(),by:who};
+        made++}
+      else if(m.qty!=null){
+        if(!(it.locs&&it.locs.length))it.locs=[{building:m.building||ctx.building,room:m.room||ctx.room,where:"",qty:Number(m.qty)}];
+        else if(it.locs.length===1)it.locs[0].qty=Number(m.qty);
+        else multi++}
       if(m.name)it.name=m.name;
       if(m.maker)it.maker=m.maker;
       if(m.model)it.model=m.model;
       if(m.category)it.cat=m.category;
-      if(m.serial&&!it.serial)it.serial=m.serial;
-      if(m.replacement!=null&&it.repl==null)it.repl=Number(m.replacement);
+      if(m.serial&&(m.force||!it.serial))it.serial=m.serial;
+      if(m.replacement!=null&&(m.force||it.repl==null))it.repl=Number(m.replacement);
+      if(m.upc!=null)it.upc=String(m.upc);
+      if(m.tag!=null){it.tag=String(m.tag);if(!it.tag)it.tagStatus="none"}
+      if(m.tagStatus)it.tagStatus=m.tagStatus;
       if(m.po){
         const c=findCat(String(m.po),String(m.line==null?m.ln:m.line));
         it.po=c?{po:c.po,ln:c.ln,d:c.d,sup:c.sup,desc:c.desc,u:c.u,acct:c.acct}
                :{po:String(m.po),ln:String(m.line||""),d:"",sup:"",desc:m.description||"",u:null};
       }
       if(m.contents)it.contents=m.contents;
-      if(m.notes)it.notes=(it.notes?it.notes+" | ":"")+m.notes;
-      it.ask=false;it.updated=new Date().toISOString().slice(0,10);
+      if(m.notes&&!String(it.notes||"").includes(m.notes))it.notes=(it.notes?it.notes+" | ":"")+m.notes;
+      it.ask=false;it.updated=today();
       await put(it);items[it.id]=it;n++}
     renderAll();
-    toast("Applied "+n+(miss.length?", "+miss.length+" ids not found":""))
+    toast("Applied "+n+(made?" ("+made+" new)":"")+(miss.length?", "+miss.length+" ids not found":"")+
+      (multi?", "+multi+" qty skipped (several locations)":""))
   }catch(e){toast("That file could not be read.")}}
 
 function b2d(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)})}
@@ -733,8 +834,11 @@ async function restore(file){
     const d=JSON.parse(await file.text());
     const src=d.items||d.recs;
     if(!Array.isArray(src))throw new Error("bad");
-    let n=0;
+    if(src.length&&"po" in src[0]&&src.every(x=>!("name" in x)&&!x.locs&&("desc" in x))){
+      toast("That is the purchase list, not a backup \u2014 loading it as the purchase list.");return loadCatalog(file)}
+    let n=0,skip=0;
     for(const it of src){
+      if(!it.name&&typeof it.po==="string"&&("desc" in it)&&!(it.locs&&it.locs.length)){skip++;continue}
       const c=Object.assign({},it),p={};
       for(const s of["item","tag","serial"])if(it.photos&&it.photos[s]){
         const v=it.photos[s];p[s]=(typeof v==="string")?await d2b(v):v}
@@ -742,7 +846,7 @@ async function restore(file){
       if(!c.id)c.id=nextId();
       await put(c);items[c.id]=c;n++}
     if(d.ctx)ctx=d.ctx;if(d.who)who=d.who;if(d.dept){dept=d.dept;mSet("dept",dept)}
-    mSet("ctx",ctx);renderAll();toast("Restored "+n+" items")
+    mSet("ctx",ctx);renderAll();toast("Restored "+n+" items"+(skip?" (skipped "+skip+" purchase-list lines)":""))
   }catch(e){toast("That file could not be read.")}}
 async function loadCatalog(file){
   try{
@@ -789,7 +893,7 @@ el("btnRoom").onclick=()=>{
 el("btnDept").onclick=()=>{const d=prompt("Department number",dept||"");if(d===null)return;
   dept=d.trim();mSet("dept",dept);renderTop();toast("Department set")};
 el("btnXlsx").onclick=exportXlsx;el("btnCsv").onclick=exportCsv;
-el("btnPhotos").onclick=exportPhotos;el("btnIdReq").onclick=exportIdReq;
+el("btnPhotos").onclick=exportPhotos;el("btnIdReq").onclick=exportForClaude;
 el("btnIdIn").onclick=()=>el("idFile").click();
 el("idFile").onchange=e=>{if(e.target.files[0])importIds(e.target.files[0]);e.target.value=""};
 el("btnBackup").onclick=backup;
@@ -797,6 +901,13 @@ el("btnRestore").onclick=()=>el("restoreFile").click();
 el("restoreFile").onchange=e=>{if(e.target.files[0])restore(e.target.files[0]);e.target.value=""};
 el("btnCatalog").onclick=()=>el("catFile").click();
 el("catFile").onchange=e=>{if(e.target.files[0])loadCatalog(e.target.files[0]);e.target.value=""};
+el("btnJunk").onclick=async()=>{
+  const j=Object.values(items).filter(isCatLine);if(!j.length)return;
+  const ids=j.map(i=>i.id).sort();
+  if(!confirm("Remove "+j.length+" purchase-list records ("+ids[0]+" to "+ids[ids.length-1]+")? Real items are not touched, and a full backup is saved first."))return;
+  try{await backup()}catch(e){toast("Backup failed \u2014 nothing removed.");return}
+  for(const it of j){await del(it.id);delete items[it.id]}
+  renderAll();toast("Removed "+j.length+" purchase-list records")};
 el("btnWipe").onclick=async()=>{
   const n=Object.keys(items).length;
   if(!confirm("Erase all "+n+" items and photos from this phone? Export first if you have not."))return;
