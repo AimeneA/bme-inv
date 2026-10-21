@@ -238,7 +238,7 @@
     <button class="btn" id="btnCatalog">Load purchase list (catalog.json)</button>
     <button class="btn danger" id="btnWipe">Erase everything</button>
     <input type="file" id="catFile" accept=".json,application/json" hidden>
-    <p class="note" style="margin:10px 0 0;font-size:12px">App version 2026-09-18</p>
+    <p class="note" style="margin:10px 0 0;font-size:12px">App version 2026-10-21</p>
   </div>
 </section>
 
@@ -265,7 +265,7 @@
           <option>Monitor</option><option>Lab Equipment</option><option>Imaging / Microscopy</option>
           <option>Electronics / Test</option><option>Hand Tools</option><option>Machine Shop</option>
           <option>Components / Parts</option><option>Glassware</option><option>Network / AV</option>
-          <option>Furniture</option><option>Other</option>
+          <option>Furniture</option><option>Chemicals / Reagents</option><option>Other</option>
         </select></label>
     </div>
 
@@ -491,7 +491,9 @@ function renderTop(){
   el("statLine").textContent=real().length+" item types, "+units+" units"+
     (dept?", dept "+dept:", no department number set")+".";
   el("catLine").textContent=CAT.length?("Purchase list: "+CAT.length+" lines."):"No purchase list loaded.";
-  const p=pending().length;el("askN").textContent=p+(p===1?" item waiting":" items waiting");
+  const q=pending(),p=q.length,qs=q.filter(i=>i.askedAt).length;
+  el("askN").textContent=p+(p===1?" item waiting":" items waiting")+
+    (qs?" \u2014 "+qs+" already sent, answer not imported yet":"");
   const j=Object.values(items).filter(isCatLine).length;
   el("junkCard").style.display=j?"":"none";el("junkN").textContent=j+(j===1?" record needs":" records need")+" removing."}
 function renderAll(){renderTop();renderItems();renderFlags()}
@@ -595,7 +597,7 @@ async function saveItem(){
     cond:el("fCond").value,owner:el("fOwner").value.trim(),notes:el("fNotes").value.trim(),contents:el("fContents").value.trim(),
     locs:locs.filter(l=>Number(l.qty)>0),po:curPo,
     photos:{item:shots.item,tag:shots.tag,serial:shots.serial},
-    created:prev.created||new Date().toISOString().slice(0,10),
+    askedAt:prev.askedAt||null,created:prev.created||new Date().toISOString().slice(0,10),
     updated:new Date().toISOString().slice(0,10),by:who};
   try{await put(it)}catch(e){toast("Could not save. Storage may be full — export now.");return}
   items[it.id]=it;
@@ -740,10 +742,21 @@ async function buildClaudeBook(list,part,of){
 async function exportForClaude(){
   const un=pending().sort((a,b)=>a.id<b.id?-1:1);
   if(!un.length){toast("Nothing waiting to be identified.");return}
+  let list=un;
+  const sent=un.filter(i=>i.askedAt),fresh=un.filter(i=>!i.askedAt);
+  if(sent.length){
+    if(!fresh.length){
+      if(!confirm(sent.length+(sent.length===1?" item was":" items were")+" already sent on "+sent[0].askedAt+
+        ", and no answers have been imported since.\n\nSend the same again?"))return;
+    }else if(confirm(sent.length+" of these were already sent on "+sent[0].askedAt+
+      ", and no answers have been imported since.\n\nOK — send only the "+fresh.length+" never sent before.\nCancel — send all "+un.length+" again.")){
+      list=fresh;
+    }
+  }
   try{await ensureExcelJS()}catch(e){toast("No connection for Excel \u2014 saving the old photos + manifest instead");return exportIdReq()}
   toast("Building the file\u2026");
   const parts=[];let part=[],bytes=0;
-  for(const it of un){
+  for(const it of list){
     const b=SLOTS.reduce((a,[s])=>a+((it.photos&&it.photos[s])?(it.photos[s].size||0):0),0);
     if(part.length&&bytes+b>PART_LIMIT){parts.push(part);part=[];bytes=0}
     part.push(it);bytes+=b}
@@ -756,8 +769,11 @@ async function exportForClaude(){
         "BME-for-Claude-"+st+(parts.length>1?"-part"+(p+1)+"of"+parts.length:"")+".xlsx");
       if(p<parts.length-1)await new Promise(r=>setTimeout(r,900))}
   }catch(e){toast("Could not build the Excel file \u2014 saving the old photos + manifest instead");return exportIdReq()}
+  const day=today();
+  for(const it of list){it.askedAt=day;items[it.id]=it;try{await put(it)}catch(e){}}
+  renderAll();
   toast(parts.length>1?("Too many photos for one file \u2014 saved "+parts.length+" files, send them all")
-                      :("Saved one file with "+un.length+(un.length===1?" item":" items")+" \u2014 send it to Claude"))}
+                      :("Saved one file with "+list.length+(list.length===1?" item":" items")+" \u2014 send it to Claude"))}
 async function exportIdReq(){
   const un=pending();
   if(!un.length){toast("Nothing waiting to be identified.");return}
@@ -810,7 +826,7 @@ async function importIds(file){
       }
       if(m.contents)it.contents=m.contents;
       if(m.notes&&!String(it.notes||"").includes(m.notes))it.notes=(it.notes?it.notes+" | ":"")+m.notes;
-      it.ask=false;it.updated=today();
+      it.ask=false;it.askedAt=null;it.updated=today();
       await put(it);items[it.id]=it;n++}
     renderAll();
     toast("Applied "+n+(made?" ("+made+" new)":"")+(miss.length?", "+miss.length+" ids not found":"")+
