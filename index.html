@@ -222,6 +222,11 @@
   <div class="card">
     <h2>Ask me to identify things</h2>
     <p class="note"><strong id="askN">0 waiting</strong>. Every new item is queued here automatically. The export is <strong>one Excel file</strong> with each item's details and photos inside &mdash; send just that file in a chat, then import the answer here.</p>
+    <div class="two" style="margin:10px 0 2px">
+      <label><span>From ID</span><input type="text" id="rngFrom" autocomplete="off" inputmode="numeric" placeholder="e.g. 392"></label>
+      <label><span>To ID</span><input type="text" id="rngTo" autocomplete="off" inputmode="numeric" placeholder="e.g. 471"></label>
+    </div>
+    <p class="note" id="rngN" style="margin:2px 0 10px"></p>
     <button class="btn primary" id="btnIdReq">Export for Claude (one Excel file)</button>
     <button class="btn" id="btnIdIn">Import identifications</button>
     <input type="file" id="idFile" accept=".json,application/json" hidden>
@@ -450,6 +455,24 @@ function needsTag(it){
   return it.tagStatus!=="major"&&v>=5000}
 function flagged(){return real().filter(needsTag)}
 function pending(){return real().filter(i=>i.ask||(!i.name&&thumbOf(i)))}
+function idNum(id){const m=/(\d+)\s*$/.exec(String(id||""));return m?Number(m[1]):NaN}
+function rangeBounds(){
+  const f=idNum(el("rngFrom").value),t=idNum(el("rngTo").value);
+  let lo=isNaN(f)?null:f,hi=isNaN(t)?null:t;
+  if(lo!=null&&hi!=null&&lo>hi){const s=lo;lo=hi;hi=s}
+  return {lo:lo,hi:hi,on:lo!=null||hi!=null}}
+function inRange(it,rb){
+  if(!rb.on)return true;
+  const n=idNum(it.id);
+  if(isNaN(n))return false;
+  return (rb.lo==null||n>=rb.lo)&&(rb.hi==null||n<=rb.hi)}
+function renderRange(){
+  if(!el("rngN"))return;
+  const rb=rangeBounds(),all=pending(),sel=all.filter(i=>inRange(i,rb));
+  el("rngN").textContent=rb.on
+    ?(sel.length+" of "+all.length+" waiting "+(all.length===1?"item is":"items are")+" in this range"+
+      (rb.lo!=null&&rb.hi==null?" (BME-"+String(rb.lo).padStart(3,"0")+" and up)":""))
+    :"Leave both blank to send everything waiting.";}
 function rowFor(it){
   const row=document.createElement("div");
   row.className="row "+(needsTag(it)?"flagged":(it.tagStatus==="major"?"major":(it.name?"plain":"dim")));
@@ -494,6 +517,7 @@ function renderTop(){
   const q=pending(),p=q.length,qs=q.filter(i=>i.askedAt).length;
   el("askN").textContent=p+(p===1?" item waiting":" items waiting")+
     (qs?" \u2014 "+qs+" already sent, answer not imported yet":"");
+  renderRange();
   const j=Object.values(items).filter(isCatLine).length;
   el("junkCard").style.display=j?"":"none";el("junkN").textContent=j+(j===1?" record needs":" records need")+" removing."}
 function renderAll(){renderTop();renderItems();renderFlags()}
@@ -740,11 +764,12 @@ async function buildClaudeBook(list,part,of){
     CAT.forEach(c=>pl.addRow([c.po,String(c.ln),c.d||"",c.sup||"",c.desc||"",c.mfr||"",c.cat||"",c.qty,c.u,c.rm||""]))}
   return wb.xlsx.writeBuffer()}
 async function exportForClaude(){
-  const un=pending().sort((a,b)=>a.id<b.id?-1:1);
-  if(!un.length){toast("Nothing waiting to be identified.");return}
+  const rb=rangeBounds();
+  const un=pending().filter(i=>inRange(i,rb)).sort((a,b)=>a.id<b.id?-1:1);
+  if(!un.length){toast(rb.on?"No waiting items in that range.":"Nothing waiting to be identified.");return}
   let list=un;
   const sent=un.filter(i=>i.askedAt),fresh=un.filter(i=>!i.askedAt);
-  if(sent.length){
+  if(sent.length&&!rb.on){
     if(!fresh.length){
       if(!confirm(sent.length+(sent.length===1?" item was":" items were")+" already sent on "+sent[0].askedAt+
         ", and no answers have been imported since.\n\nSend the same again?"))return;
@@ -771,6 +796,7 @@ async function exportForClaude(){
   }catch(e){toast("Could not build the Excel file \u2014 saving the old photos + manifest instead");return exportIdReq()}
   const day=today();
   for(const it of list){it.askedAt=day;items[it.id]=it;try{await put(it)}catch(e){}}
+  el("rngFrom").value="";el("rngTo").value="";
   renderAll();
   toast(parts.length>1?("Too many photos for one file \u2014 saved "+parts.length+" files, send them all")
                       :("Saved one file with "+list.length+(list.length===1?" item":" items")+" \u2014 send it to Claude"))}
@@ -909,7 +935,8 @@ el("btnRoom").onclick=()=>{
 el("btnDept").onclick=()=>{const d=prompt("Department number",dept||"");if(d===null)return;
   dept=d.trim();mSet("dept",dept);renderTop();toast("Department set")};
 el("btnXlsx").onclick=exportXlsx;el("btnCsv").onclick=exportCsv;
-el("btnPhotos").onclick=exportPhotos;el("btnIdReq").onclick=exportForClaude;
+el("btnPhotos").onclick=exportPhotos;el("rngFrom").oninput=renderRange;el("rngTo").oninput=renderRange;
+el("btnIdReq").onclick=exportForClaude;
 el("btnIdIn").onclick=()=>el("idFile").click();
 el("idFile").onchange=e=>{if(e.target.files[0])importIds(e.target.files[0]);e.target.value=""};
 el("btnBackup").onclick=backup;
